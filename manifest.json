@@ -1,10 +1,11 @@
 {
   "id": "insert-multiple-attachments",
   "name": "Insert Multiple Attachments",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Allows to insert multiple attachments at a time",
   "author": "mnaoumov",
   "authorUrl": "https://github.com/mnaoumov/",
   "isDesktopOnly": false,
-  "fundingUrl": "https://www.buymeacoffee.com/mnaoumov"
+  "fundingUrl": "https://www.buymeacoffee.com/mnaoumov",
+  "minAppVersion": "1.7.7"
 }
