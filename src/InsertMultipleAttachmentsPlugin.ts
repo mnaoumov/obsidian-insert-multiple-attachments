@@ -4,13 +4,14 @@ import type {
 } from 'obsidian';
 import type { MaybePromise } from 'obsidian-dev-utils/Async';
 
+import { EmptySettings } from 'obsidian-dev-utils/obsidian/Plugin/EmptySettings';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
 
 import { InsertAttachmentsControl } from './InsertAttachmentsControl.ts';
 
-export class InsertMultipleAttachmentsPlugin extends PluginBase<object> {
-  protected override createDefaultPluginSettings(): object {
-    return {};
+export class InsertMultipleAttachmentsPlugin extends PluginBase {
+  protected override createPluginSettings(): EmptySettings {
+    return new EmptySettings();
   }
 
   protected override createPluginSettingsTab(): null | PluginSettingTab {
