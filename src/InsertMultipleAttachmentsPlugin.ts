@@ -2,7 +2,6 @@ import type {
   Editor,
   PluginSettingTab
 } from 'obsidian';
-import type { MaybePromise } from 'obsidian-dev-utils/Async';
 
 import { EmptySettings } from 'obsidian-dev-utils/obsidian/Plugin/EmptySettings';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
@@ -18,7 +17,7 @@ export class InsertMultipleAttachmentsPlugin extends PluginBase {
     return null;
   }
 
-  protected override onLayoutReady(): MaybePromise<void> {
+  protected override onLayoutReady(): void {
     this.addCommand({
       editorCallback: (editor: Editor) => {
         new InsertAttachmentsControl(this.app, editor);
