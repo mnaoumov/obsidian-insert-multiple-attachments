@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.1.7
+
+- Refactor to SASS
+
 ## 1.1.6
 
 - Format
