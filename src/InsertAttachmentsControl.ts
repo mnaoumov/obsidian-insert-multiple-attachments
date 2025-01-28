@@ -19,7 +19,13 @@ export class InsertAttachmentsControl {
   public constructor(private readonly app: App, private readonly editor: Editor) {
     this.currentActiveDocument = activeDocument;
     this.handleFocusClickBound = this.handleFocusClick.bind(this);
-    this.fileEl = this.currentActiveDocument.body.createEl('input', { attr: { multiple: '' }, cls: 'file-input', type: 'file' });
+    this.fileEl = this.currentActiveDocument.body.createEl('input', {
+      attr: {
+        multiple: ''
+      },
+      cls: 'insert-multiple-attachments',
+      type: 'file'
+    });
     this.fileEl.addEventListener('change', convertAsyncToSync(this.handleChange.bind(this)));
     this.fileEl.focus();
     this.fileEl.click();

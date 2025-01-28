@@ -1,3 +1,4 @@
+import './styles/main.scss';
 import { InsertMultipleAttachmentsPlugin } from './InsertMultipleAttachmentsPlugin.ts';
 
 // eslint-disable-next-line import-x/no-default-export
