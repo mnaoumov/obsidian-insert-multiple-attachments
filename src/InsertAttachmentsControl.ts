@@ -67,8 +67,9 @@ export class InsertAttachmentsControl {
   }
 
   private handleFocusClick(): void {
+    const TIMEOUT_IN_MILLISECONDS = 5000;
     this.removeHandlers();
-    this.timeoutId = window.setTimeout(this.detachFileEl.bind(this), 5000);
+    this.timeoutId = window.setTimeout(this.detachFileEl.bind(this), TIMEOUT_IN_MILLISECONDS);
   }
 
   private removeHandlers(): void {
