@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.1.8
+
+- Lint
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/17.2.2
+
 ## 1.1.7
 
 - Refactor to SASS
