@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.1.9
+
+- Add icon
+
 ## 1.1.8
 
 - Lint
