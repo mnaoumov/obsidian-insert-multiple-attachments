@@ -22,6 +22,7 @@ export class InsertMultipleAttachmentsPlugin extends PluginBase {
       editorCallback: (editor: Editor) => {
         new InsertAttachmentsControl(this.app, editor);
       },
+      icon: 'lucide-paperclip',
       id: 'insert-multiple-attachments',
       name: 'Insert Multiple Attachments'
     });
