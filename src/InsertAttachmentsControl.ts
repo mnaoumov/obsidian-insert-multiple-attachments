@@ -52,7 +52,7 @@ export class InsertAttachmentsControl {
       return;
     }
 
-    const links = [];
+    const links: string[] = [];
 
     for (const file of Array.from(this.fileEl.files)) {
       const filename = basename(file.name);
