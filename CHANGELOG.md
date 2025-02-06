@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.1.11
+
+- Fix any type
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/17.8.0
+
 ## 1.1.9
 
 - Add icon
