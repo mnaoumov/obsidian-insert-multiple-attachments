@@ -6,8 +6,8 @@ It just modifies the built-in `Insert Attachment` command to add support for mul
 
 ## Installation
 
-- `Insert Multiple Attachments` is available on [the official Community Plugins repository](https://obsidian.md/plugins?id=insert-multiple-attachments).
-- Beta releases can be installed through [BRAT](https://obsidian.md/plugins?id=obsidian42-brat).
+- The plugin is available in [the official Community Plugins repository](https://obsidian.md/plugins?id=insert-multiple-attachments).
+- [Beta releases](obsidian://brat?plugin=https://github.com/mnaoumov/obsidian-insert-multiple-attachments) can be installed via [BRAT](https://obsidian.md/plugins?id=obsidian42-brat).
 
 ## Debugging
 
