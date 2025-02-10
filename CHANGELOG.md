@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.1.12
+
+- Update template
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/18.4.2
+
 ## 1.1.11
 
 - Fix any type
