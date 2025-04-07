@@ -12,7 +12,7 @@ import {
 export class InsertAttachmentsControl {
   private readonly currentActiveDocument: Document;
   private readonly fileEl: HTMLInputElement;
-  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+
   private handleFocusClickBound: (this: void) => void;
   private timeoutId = 0;
 
