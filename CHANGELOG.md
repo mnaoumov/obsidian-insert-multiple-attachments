@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.1.17
+
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.1.1
+
 ## 1.1.16
 
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.1.0
