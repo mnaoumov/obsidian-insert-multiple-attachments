@@ -9,14 +9,18 @@ import {
   extname
 } from 'obsidian-dev-utils/Path';
 
-export class InsertAttachmentsControl {
-  private readonly currentActiveDocument: Document;
-  private readonly fileEl: HTMLInputElement;
+import type { Plugin } from './Plugin.ts';
 
+export class InsertAttachmentsControl {
+  private readonly app: App;
+  private readonly currentActiveDocument: Document;
+
+  private readonly fileEl: HTMLInputElement;
   private handleFocusClickBound: (this: void) => void;
   private timeoutId = 0;
 
-  public constructor(private readonly app: App, private readonly editor: Editor) {
+  public constructor(private readonly plugin: Plugin, private readonly editor: Editor) {
+    this.app = this.plugin.app;
     this.currentActiveDocument = activeDocument;
     this.handleFocusClickBound = this.handleFocusClick.bind(this);
     this.fileEl = this.currentActiveDocument.body.createEl('input', {
@@ -62,7 +66,8 @@ export class InsertAttachmentsControl {
       links.push(this.app.fileManager.generateMarkdownLink(attachmentFile, activeFile.path));
     }
 
-    this.editor.replaceSelection(links.join('\n\n'));
+    const separator = this.plugin.settings.shouldInsertDoubleLinesBetweenAttachmentLinks ? '\n\n' : '\n';
+    this.editor.replaceSelection(links.join(separator));
     this.detachFileEl();
   }
 
