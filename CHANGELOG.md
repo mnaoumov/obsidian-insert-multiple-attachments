@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.2.0
+
+- Configure double lines between links
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.0.0
+
 ## 1.1.17
 
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.1.1
