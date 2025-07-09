@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.2.4
+
+- window.setTimeout
+
 ## 1.2.3
 
 - Update libs
