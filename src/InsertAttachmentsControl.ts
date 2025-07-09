@@ -33,7 +33,7 @@ export class InsertAttachmentsControl {
     this.fileEl.addEventListener('change', convertAsyncToSync(this.handleChange.bind(this)));
     this.fileEl.focus();
     this.fileEl.click();
-    setTimeout(() => {
+    window.setTimeout(() => {
       this.currentActiveDocument.addEventListener('focus', this.handleFocusClickBound);
       this.currentActiveDocument.addEventListener('click', this.handleFocusClickBound);
     }, 0);
