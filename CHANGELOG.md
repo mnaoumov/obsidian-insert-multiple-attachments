@@ -1,20 +1,24 @@
 # CHANGELOG
 
+## 1.2.9
+
+- Minor changes
+
 ## 1.2.8
 
-- Update libs
+- Minor changes
 
 ## 1.2.7
 
-- Update libs
+- Minor changes
 
 ## 1.2.6
 
-- Update libs
+- Minor changes
 
 ## 1.2.5
 
-- Update libs
+- Minor changes
 
 ## 1.2.4
 
@@ -22,32 +26,31 @@
 
 ## 1.2.3
 
-- Update libs
+- Minor changes
 
 ## 1.2.2
 
-- Update libs
+- Minor changes
 
 ## 1.2.1
 
-- Update libs
+- Minor changes
 
 ## 1.2.0
 
 - Configure double lines between links
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.0.0
 
 ## 1.1.17
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.1.1
+- Minor changes
 
 ## 1.1.16
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.1.0
+- Minor changes
 
 ## 1.1.15
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.0.1
+- Minor changes
 
 ## 1.1.14
 
@@ -55,17 +58,15 @@
 
 ## 1.1.13
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.2.1
+- Minor changes
 
 ## 1.1.12
 
 - Update template
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/18.4.2
 
 ## 1.1.11
 
 - Fix any type
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/17.8.0
 
 ## 1.1.9
 
@@ -73,8 +74,7 @@
 
 ## 1.1.8
 
-- Lint
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/17.2.2
+- Minor changes
 
 ## 1.1.7
 
@@ -82,27 +82,27 @@
 
 ## 1.1.6
 
-- Format
+- Minor changes
 
 ## 1.1.5
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/16.1.0
+- Minor changes
 
 ## 1.1.4
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/15.0.0
+- Minor changes
 
 ## 1.1.3
 
-- Update libs
+- Minor changes
 
 ## 1.1.2
 
-- Refactor
+- Minor changes
 
 ## 1.1.1
 
-- Update libs
+- Minor changes
 
 ## 1.1.0
 
