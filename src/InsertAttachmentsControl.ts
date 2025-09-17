@@ -16,7 +16,7 @@ export class InsertAttachmentsControl {
   private readonly currentActiveDocument: Document;
 
   private readonly fileEl: HTMLInputElement;
-  private handleFocusClickBound: (this: void) => void;
+  private readonly handleFocusClickBound: (this: void) => void;
   private timeoutId = 0;
 
   public constructor(private readonly plugin: Plugin, private readonly editor: Editor) {
