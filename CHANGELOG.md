@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.3.0
+
+- feat: configure delimiters
+
 ## 1.2.17
 
 - fix: build
