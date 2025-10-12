@@ -1,3 +1,5 @@
 export class PluginSettings {
-  public shouldInsertDoubleLinesBetweenAttachmentLinks = true;
+  public attachmentLinksDelimiter = '\n\n';
+  public attachmentLinksPrefix = '';
+  public attachmentLinksSuffix = '';
 }

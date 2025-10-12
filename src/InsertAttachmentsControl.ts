@@ -66,8 +66,10 @@ export class InsertAttachmentsControl {
       links.push(this.app.fileManager.generateMarkdownLink(attachmentFile, activeFile.path));
     }
 
-    const separator = this.plugin.settings.shouldInsertDoubleLinesBetweenAttachmentLinks ? '\n\n' : '\n';
-    this.editor.replaceSelection(links.join(separator));
+    const linksStr = this.plugin.settings.attachmentLinksPrefix
+      + links.join(this.plugin.settings.attachmentLinksDelimiter)
+      + this.plugin.settings.attachmentLinksSuffix;
+    this.editor.replaceSelection(linksStr);
     this.detachFileEl();
   }
 
