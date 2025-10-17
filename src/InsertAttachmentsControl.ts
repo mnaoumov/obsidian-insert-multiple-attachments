@@ -63,7 +63,35 @@ export class InsertAttachmentsControl {
       const data = await file.arrayBuffer();
       const ext = extname(filename);
       const attachmentFile = await this.app.saveAttachment(basename(filename, ext), ext.slice(1), data);
-      links.push(this.app.fileManager.generateMarkdownLink(attachmentFile, activeFile.path));
+      let link = this.app.fileManager.generateMarkdownLink(attachmentFile, activeFile.path);
+      const maxWidth = Number(this.plugin.settings.attachmentMaxWidth) || 0;
+      if (/\.(?:png|jpe?g|gif|webp|bmp)$/i.test(filename) && maxWidth > 0) {
+        const blob = new Blob([data], { type: file.type });
+        const url = URL.createObjectURL(blob);
+        try {
+          const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+            const image = new Image();
+            image.onload = (): void => {
+              resolve(image);
+            };
+            image.onerror = reject;
+            image.src = url;
+          });
+          const targetHeight = Math.round(
+            (img.naturalHeight / img.naturalWidth) * maxWidth
+          );
+          if (!link.startsWith('![') && !link.startsWith('![[')) {
+            link = `![[${link}]]`;
+          }
+          link = link.replace(
+            ']]',
+            `|${maxWidth.toString()}x${targetHeight.toString()}]]`
+          );
+        } finally {
+          URL.revokeObjectURL(url);
+        }
+      }
+      links.push(link);
     }
 
     const linksStr = this.plugin.settings.attachmentLinksPrefix
