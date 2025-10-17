@@ -50,6 +50,19 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
 
         handleWhitespace(text);
       });
+
+    new Setting(this.containerEl)
+      .setName('Attachment max Width')
+      .setDesc('The maximum width for inserted image attachments')
+      .addText((text) => {
+        text.inputEl.type = 'number';
+        this.bind(text, 'attachmentMaxWidth', {
+          componentToPluginSettingsValueConverter: restoreWhitespaceCharacters,
+          pluginSettingsToComponentValueConverter: showWhitespaceCharacters
+        });
+
+        handleWhitespace(text);
+      });
   }
 }
 
