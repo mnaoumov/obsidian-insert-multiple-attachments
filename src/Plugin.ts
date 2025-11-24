@@ -24,8 +24,8 @@ export class Plugin extends PluginBase<PluginTypes> {
         new InsertAttachmentsControl(this, editor);
       },
       icon: 'lucide-paperclip',
-      id: 'insert-multiple-attachments',
-      name: 'Insert Multiple Attachments'
+      id: 'invoke',
+      name: 'Invoke'
     });
   }
 }
