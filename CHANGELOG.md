@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.3.3
+
+- fix: ensure embeds re #6
+- chore: update libs
+
 ## 1.3.2
 
 - chore: update libs

@@ -1,6 +1,6 @@
 {
   "name": "insert-multiple-attachments",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Allows to insert multiple attachments at a time",
   "scripts": {
     "build": "obsidian-dev-utils build",
