@@ -63,7 +63,11 @@ export class InsertAttachmentsControl {
       const data = await file.arrayBuffer();
       const ext = extname(filename);
       const attachmentFile = await this.app.saveAttachment(basename(filename, ext), ext.slice(1), data);
-      links.push(this.app.fileManager.generateMarkdownLink(attachmentFile, activeFile.path));
+      let link = this.app.fileManager.generateMarkdownLink(attachmentFile, activeFile.path);
+      if (!link.startsWith('!')) {
+        link = `!${link}`;
+      }
+      links.push(link);
     }
 
     const linksStr = this.plugin.settings.attachmentLinksPrefix
