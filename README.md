@@ -1,5 +1,9 @@
 # Insert Multiple Attachments
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/mnaoumov)
+[![GitHub release](https://img.shields.io/github/v/release/mnaoumov/obsidian-insert-multiple-attachments)](https://github.com/mnaoumov/obsidian-insert-multiple-attachments/releases)
+[![GitHub downloads](https://img.shields.io/github/downloads/mnaoumov/obsidian-insert-multiple-attachments/total)](https://github.com/mnaoumov/obsidian-insert-multiple-attachments/releases)
+
 This is a plugin for [Obsidian](https://obsidian.md/) that allows to insert multiple attachments at a time.
 
 It just modifies the built-in `Insert Attachment` command to add support for multiple files.
@@ -31,8 +35,14 @@ For more details, refer to the [documentation](https://github.com/mnaoumov/obsid
 ## Support
 
 <!-- markdownlint-disable MD033 -->
+
 <a href="https://www.buymeacoffee.com/mnaoumov" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="60" width="217"></a>
+
 <!-- markdownlint-enable MD033 -->
+
+## My other Obsidian resources
+
+[See my other Obsidian resources](https://github.com/mnaoumov/obsidian-resources).
 
 ## License
 
