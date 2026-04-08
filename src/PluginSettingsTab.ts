@@ -2,8 +2,8 @@ import {
   Setting,
   TextComponent
 } from 'obsidian';
-import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
-import { replace } from 'obsidian-dev-utils/String';
+import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/plugin/plugin-settings-tab-base';
+import { replace } from 'obsidian-dev-utils/string';
 
 import type { PluginTypes } from './PluginTypes.ts';
 
