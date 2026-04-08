@@ -6,7 +6,7 @@ import type {
 import {
   EditorCommandBase,
   EditorCommandInvocationBase
-} from 'obsidian-dev-utils/obsidian/Commands/EditorCommandBase';
+} from 'obsidian-dev-utils/obsidian/commands/editor-command-base';
 
 import type { Plugin } from '../Plugin.ts';
 
