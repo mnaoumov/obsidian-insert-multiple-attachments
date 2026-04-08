@@ -3,11 +3,11 @@ import type {
   Editor
 } from 'obsidian';
 
-import { convertAsyncToSync } from 'obsidian-dev-utils/Async';
+import { convertAsyncToSync } from 'obsidian-dev-utils/async';
 import {
   basename,
   extname
-} from 'obsidian-dev-utils/Path';
+} from 'obsidian-dev-utils/path';
 
 import type { Plugin } from './Plugin.ts';
 
