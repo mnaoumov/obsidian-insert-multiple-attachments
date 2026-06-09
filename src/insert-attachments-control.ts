@@ -2,6 +2,7 @@ import type {
   App,
   Editor
 } from 'obsidian';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { convertAsyncToSync } from 'obsidian-dev-utils/async';
 import {
@@ -9,18 +10,41 @@ import {
   extname
 } from 'obsidian-dev-utils/path';
 
-import type { Plugin } from './Plugin.ts';
+import type { PluginSettings } from './plugin-settings.ts';
+
+/**
+ * Params for creating an {@link InsertAttachmentsControl}.
+ */
+export interface InsertAttachmentsControlConstructorParams {
+  /**
+   * The Obsidian app instance.
+   */
+  readonly app: App;
+
+  /**
+   * The editor to insert attachment links into.
+   */
+  readonly editor: Editor;
+
+  /**
+   * The plugin settings.
+   */
+  readonly pluginSettings: ReadonlyDeep<PluginSettings>;
+}
 
 export class InsertAttachmentsControl {
   private readonly app: App;
   private readonly currentActiveDocument: Document;
-
+  private readonly editor: Editor;
   private readonly fileEl: HTMLInputElement;
   private readonly handleFocusClickBound: (this: void) => void;
+  private readonly pluginSettings: ReadonlyDeep<PluginSettings>;
   private timeoutId = 0;
 
-  public constructor(private readonly plugin: Plugin, private readonly editor: Editor) {
-    this.app = this.plugin.app;
+  public constructor(params: InsertAttachmentsControlConstructorParams) {
+    this.app = params.app;
+    this.editor = params.editor;
+    this.pluginSettings = params.pluginSettings;
     this.currentActiveDocument = activeDocument;
     this.handleFocusClickBound = this.handleFocusClick.bind(this);
     this.fileEl = this.currentActiveDocument.body.createEl('input', {
@@ -70,9 +94,9 @@ export class InsertAttachmentsControl {
       links.push(link);
     }
 
-    const linksStr = this.plugin.settings.attachmentLinksPrefix
-      + links.join(this.plugin.settings.attachmentLinksDelimiter)
-      + this.plugin.settings.attachmentLinksSuffix;
+    const linksStr = this.pluginSettings.attachmentLinksPrefix
+      + links.join(this.pluginSettings.attachmentLinksDelimiter)
+      + this.pluginSettings.attachmentLinksSuffix;
     this.editor.replaceSelection(linksStr);
     this.detachFileEl();
   }
@@ -86,6 +110,6 @@ export class InsertAttachmentsControl {
   private removeHandlers(): void {
     this.currentActiveDocument.removeEventListener('focus', this.handleFocusClickBound);
     this.currentActiveDocument.removeEventListener('click', this.handleFocusClickBound);
-    clearTimeout(this.timeoutId);
+    window.clearTimeout(this.timeoutId);
   }
 }
