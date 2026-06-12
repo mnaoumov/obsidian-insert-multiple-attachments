@@ -1,4 +1,10 @@
+
 # CHANGELOG
+
+## 1.3.10
+
+- chore: update version script
+- chore: update manifest
 
 ## 1.3.9
 
