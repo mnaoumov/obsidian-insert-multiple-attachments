@@ -7,6 +7,7 @@ import type { ReadonlyDeep } from 'type-fest';
 
 import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
 import {
+  beforeEach,
   describe,
   expect,
   it,
@@ -17,16 +18,6 @@ import type { PluginSettings } from '../plugin-settings.ts';
 
 import { InvokeCommandHandler } from './invoke-command-handler.ts';
 
-interface InternalExecuteEditor {
-  executeEditor(editor: Editor, ctx: MarkdownFileInfo): void;
-}
-
-interface MockEditorCommandHandlerConstructorParams {
-  readonly icon: string;
-  readonly id: string;
-  readonly name: string;
-}
-
 const hoisted = vi.hoisted(() => ({
   mockInsertAttachmentsControlConstructor: vi.fn()
 }));
@@ -35,80 +26,68 @@ vi.mock('../insert-attachments-control.ts', () => ({
   InsertAttachmentsControl: hoisted.mockInsertAttachmentsControlConstructor
 }));
 
-vi.mock('obsidian-dev-utils/obsidian/command-handlers/editor-command-handler', () => ({
-  EditorCommandHandler: class MockEditorCommandHandler {
-    public readonly icon: string;
-    public readonly id: string;
-    public readonly name: string;
-
-    public constructor(params: MockEditorCommandHandlerConstructorParams) {
-      this.icon = params.icon;
-      this.id = params.id;
-      this.name = params.name;
-    }
-  }
-}));
+function createHandler(app?: App, settings?: ReadonlyDeep<PluginSettings>): InvokeCommandHandler {
+  return new InvokeCommandHandler({
+    app: app ?? strictProxy<App>({}),
+    getPluginSettings: (): ReadonlyDeep<PluginSettings> => settings ?? strictProxy<PluginSettings>({}),
+    pluginName: 'test-plugin'
+  });
+}
 
 describe('InvokeCommandHandler', () => {
-  it('should create an instance', (): void => {
-    const handler = new InvokeCommandHandler({
-      app: strictProxy<App>({}),
-      getPluginSettings: (): ReadonlyDeep<PluginSettings> => strictProxy<PluginSettings>({}),
-      pluginName: 'test-plugin'
-    });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-    expect(handler).toBeInstanceOf(InvokeCommandHandler);
+  it('should create an instance', (): void => {
+    expect(createHandler()).toBeInstanceOf(InvokeCommandHandler);
   });
 
   it('should set correct id', (): void => {
-    const handler = new InvokeCommandHandler({
-      app: strictProxy<App>({}),
-      getPluginSettings: (): ReadonlyDeep<PluginSettings> => strictProxy<PluginSettings>({}),
-      pluginName: 'test-plugin'
-    });
-
-    expect(handler.id).toBe('invoke');
+    expect(createHandler().id).toBe('invoke');
   });
 
   it('should set correct icon', (): void => {
-    const handler = new InvokeCommandHandler({
-      app: strictProxy<App>({}),
-      getPluginSettings: (): ReadonlyDeep<PluginSettings> => strictProxy<PluginSettings>({}),
-      pluginName: 'test-plugin'
-    });
-
-    expect(handler.icon).toBe('lucide-paperclip');
+    expect(createHandler().icon).toBe('lucide-paperclip');
   });
 
   it('should set correct name', (): void => {
-    const handler = new InvokeCommandHandler({
-      app: strictProxy<App>({}),
-      getPluginSettings: (): ReadonlyDeep<PluginSettings> => strictProxy<PluginSettings>({}),
-      pluginName: 'test-plugin'
-    });
-
-    expect(handler.name).toBe('Invoke');
+    expect(createHandler().name).toBe('Invoke');
   });
 
-  it('should create InsertAttachmentsControl when executeEditor is called', (): void => {
-    const mockApp = strictProxy<App>({});
-    const mockSettings = strictProxy<PluginSettings>({});
-    const handler = new InvokeCommandHandler({
-      app: mockApp,
-      getPluginSettings: (): ReadonlyDeep<PluginSettings> => mockSettings,
-      pluginName: 'test-plugin'
-    });
+  it('should build a command with an editorCheckCallback', (): void => {
+    const command = createHandler().buildCommand();
 
-    const mockEditor = strictProxy<Editor>({});
-    const mockCtx = strictProxy<MarkdownFileInfo>({});
+    expect(command.id).toBe('invoke');
+    expect(command.editorCheckCallback).toBeDefined();
+  });
 
-    // eslint-disable-next-line no-restricted-syntax -- test helper accesses protected executeEditor method.
-    (handler as unknown as InternalExecuteEditor).executeEditor(mockEditor, mockCtx);
+  it('should create InsertAttachmentsControl when the command executes', (): void => {
+    const app = strictProxy<App>({});
+    const settings = strictProxy<PluginSettings>({});
+    const handler = createHandler(app, settings);
+
+    const editor = strictProxy<Editor>({});
+    const ctx = strictProxy<MarkdownFileInfo>({});
+    const command = handler.buildCommand();
+    command.editorCheckCallback?.(false, editor, ctx);
 
     expect(hoisted.mockInsertAttachmentsControlConstructor).toHaveBeenCalledWith({
-      app: mockApp,
-      editor: mockEditor,
-      pluginSettings: mockSettings
+      app,
+      editor,
+      pluginSettings: settings
     });
+  });
+
+  it('should not create InsertAttachmentsControl when only checking', (): void => {
+    const handler = createHandler();
+
+    const editor = strictProxy<Editor>({});
+    const ctx = strictProxy<MarkdownFileInfo>({});
+    const command = handler.buildCommand();
+    const result = command.editorCheckCallback?.(true, editor, ctx);
+
+    expect(result).toBe(true);
+    expect(hoisted.mockInsertAttachmentsControlConstructor).not.toHaveBeenCalled();
   });
 });

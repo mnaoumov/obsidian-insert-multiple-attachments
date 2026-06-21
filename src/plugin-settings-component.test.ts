@@ -1,6 +1,13 @@
+import type { AsyncEventRef } from 'obsidian-dev-utils/async-events';
 import type { DataHandler } from 'obsidian-dev-utils/obsidian/data-handler';
 import type { PluginEventSource } from 'obsidian-dev-utils/obsidian/plugin/plugin-event-source';
+import type { GenericObject } from 'obsidian-dev-utils/type-guards';
 
+import {
+  noop,
+  noopAsync
+} from 'obsidian-dev-utils/function';
+import { PluginSettingsComponentBase } from 'obsidian-dev-utils/obsidian/components/plugin-settings-component';
 import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
 import {
   describe,
@@ -9,152 +16,83 @@ import {
   vi
 } from 'vitest';
 
-interface MockConstructorParams {
-  readonly pluginSettingsClass: new () => unknown;
+import { PluginSettingsComponent } from './plugin-settings-component.ts';
+import { PluginSettings } from './plugin-settings.ts';
+
+class MockDataHandler implements DataHandler {
+  public loadData = vi.fn(() => Promise.resolve(this.data));
+
+  private _data: unknown;
+
+  public saveData = vi.fn((data: unknown) => {
+    this._data = data;
+    return noopAsync();
+  });
+
+  public get data(): unknown {
+    return this._data;
+  }
+
+  public constructor(data: GenericObject) {
+    this._data = data;
+  }
 }
 
-const PluginSettingsComponentBaseMock = vi.hoisted(() =>
-  class {
-    public readonly defaultSettings: unknown;
-    protected legacyConverterCalled = false;
+async function createLoadedComponent(data: GenericObject): Promise<PluginSettingsComponent> {
+  const component = new PluginSettingsComponent({
+    dataHandler: new MockDataHandler(data),
+    pluginEventSource: createMockPluginEventSource()
+  });
+  await component.loadWithPromises();
+  return component;
+}
 
-    public constructor(params: MockConstructorParams) {
-      this.defaultSettings = new params.pluginSettingsClass();
+function createMockPluginEventSource(): PluginEventSource {
+  const source: PluginEventSource = strictProxy<PluginEventSource>({
+    offref: noop,
+    on(name: string, callback: () => void, thisArg?: unknown): AsyncEventRef {
+      return { asyncEventSource: source, callback, name, thisArg };
     }
-
-    protected registerLegacySettingsConverter(
-      _legacyClass: new () => unknown,
-      _converter: (settings: Record<string, unknown>) => void
-    ): void {
-      this.legacyConverterCalled = true;
-    }
-
-    protected registerLegacySettingsConverters(): void {
-      // Base no-op
-    }
-  }
-);
-
-vi.mock('obsidian-dev-utils/obsidian/components/plugin-settings-component', () => ({
-  PluginSettingsComponentBase: PluginSettingsComponentBaseMock
-}));
-
-// eslint-disable-next-line import-x/first, import-x/imports-first -- vi.mock must precede imports.
-import { PluginSettingsComponent } from './plugin-settings-component.ts';
+  });
+  return source;
+}
 
 describe('PluginSettingsComponent', () => {
-  it('should create an instance', () => {
+  it('should be a PluginSettingsComponentBase with PluginSettings defaults', () => {
     const component = new PluginSettingsComponent({
       dataHandler: strictProxy<DataHandler>({}),
-      pluginEventSource: strictProxy<PluginEventSource>({})
+      pluginEventSource: createMockPluginEventSource()
     });
 
-    expect(component).toBeInstanceOf(PluginSettingsComponent);
+    expect(component).toBeInstanceOf(PluginSettingsComponentBase);
+    expect(component.defaultSettings).toEqual(new PluginSettings());
   });
 
-  it('should pass pluginSettingsClass to base constructor', () => {
-    const component = new PluginSettingsComponent({
-      dataHandler: strictProxy<DataHandler>({}),
-      pluginEventSource: strictProxy<PluginEventSource>({})
-    });
+  it('should convert legacy shouldInsertDoubleLinesBetweenAttachmentLinks=true to a double newline delimiter', async () => {
+    const component = await createLoadedComponent({ shouldInsertDoubleLinesBetweenAttachmentLinks: true });
 
-    expect(component.defaultSettings).toBeDefined();
+    expect(component.settings.attachmentLinksDelimiter).toBe('\n\n');
   });
 
-  it('should convert legacy shouldInsertDoubleLinesBetweenAttachmentLinks=true to double newline delimiter', () => {
-    const component = new PluginSettingsComponent({
-      dataHandler: strictProxy<DataHandler>({}),
-      pluginEventSource: strictProxy<PluginEventSource>({})
-    });
+  it('should convert legacy shouldInsertDoubleLinesBetweenAttachmentLinks=false to a single newline delimiter', async () => {
+    const component = await createLoadedComponent({ shouldInsertDoubleLinesBetweenAttachmentLinks: false });
 
-    const legacySettings: Record<string, unknown> = {
-      shouldInsertDoubleLinesBetweenAttachmentLinks: true
-    };
-
-    const converter = getLegacyConverter(component);
-    converter(legacySettings);
-
-    expect(legacySettings['attachmentLinksDelimiter']).toBe('\n\n');
+    expect(component.settings.attachmentLinksDelimiter).toBe('\n');
   });
 
-  it('should convert legacy shouldInsertDoubleLinesBetweenAttachmentLinks=false to single newline delimiter', () => {
-    const component = new PluginSettingsComponent({
-      dataHandler: strictProxy<DataHandler>({}),
-      pluginEventSource: strictProxy<PluginEventSource>({})
-    });
+  it('should leave the delimiter at its default when the legacy field is absent', async () => {
+    const component = await createLoadedComponent({});
 
-    const legacySettings: Record<string, unknown> = {
-      shouldInsertDoubleLinesBetweenAttachmentLinks: false
-    };
-
-    const converter = getLegacyConverter(component);
-    converter(legacySettings);
-
-    expect(legacySettings['attachmentLinksDelimiter']).toBe('\n');
+    expect(component.settings.attachmentLinksDelimiter).toBe(new PluginSettings().attachmentLinksDelimiter);
   });
 
-  it('should not modify delimiter when legacy field is undefined', () => {
-    const component = new PluginSettingsComponent({
-      dataHandler: strictProxy<DataHandler>({}),
-      pluginEventSource: strictProxy<PluginEventSource>({})
+  it('should drop the legacy field after conversion', async () => {
+    const component = await createLoadedComponent({ shouldInsertDoubleLinesBetweenAttachmentLinks: true });
+
+    expect(component.settings).toEqual({
+      attachmentLinksDelimiter: '\n\n',
+      attachmentLinksPrefix: '',
+      attachmentLinksSuffix: ''
     });
-
-    const legacySettings: Record<string, unknown> = {};
-
-    const converter = getLegacyConverter(component);
-    converter(legacySettings);
-
-    expect(legacySettings['attachmentLinksDelimiter']).toBeUndefined();
-  });
-
-  it('should have shouldInsertDoubleLinesBetweenAttachmentLinks default to true in LegacySettings', () => {
-    const component = new PluginSettingsComponent({
-      dataHandler: strictProxy<DataHandler>({}),
-      pluginEventSource: strictProxy<PluginEventSource>({})
-    });
-
-    const { legacyClass } = getLegacyRegistration(component);
-    const legacyInstance = new legacyClass();
-
-    expect(legacyInstance['shouldInsertDoubleLinesBetweenAttachmentLinks']).toBe(true);
   });
 });
-
-interface CapturedLegacyRegistration {
-  converter(settings: Record<string, unknown>): void;
-  readonly legacyClass: new () => Record<string, unknown>;
-}
-
-interface MockWithConverters {
-  capturedConverter: ((settings: Record<string, unknown>) => void) | undefined;
-  registerLegacySettingsConverter(legacyClass: new () => unknown, converter: (settings: Record<string, unknown>) => void): void;
-  registerLegacySettingsConverters(): void;
-}
-
-function getLegacyConverter(component: PluginSettingsComponent): (settings: Record<string, unknown>) => void {
-  return getLegacyRegistration(component).converter;
-}
-
-function getLegacyRegistration(component: PluginSettingsComponent): CapturedLegacyRegistration {
-  // eslint-disable-next-line no-restricted-syntax -- test helper needs type assertion to access mock methods.
-  const mock = component as unknown as MockWithConverters;
-  let captured: CapturedLegacyRegistration | undefined;
-
-  mock.registerLegacySettingsConverter = (
-    legacyClass: new () => unknown,
-    converter: (settings: Record<string, unknown>) => void
-  ): void => {
-    captured = {
-      converter,
-      legacyClass: legacyClass as new () => Record<string, unknown>
-    };
-  };
-
-  mock.registerLegacySettingsConverters();
-
-  if (!captured) {
-    throw new Error('No legacy converter was registered');
-  }
-
-  return captured;
-}
