@@ -18,21 +18,12 @@ import type { PluginSettings } from './plugin-settings.ts';
 
 import { InsertAttachmentsControl } from './insert-attachments-control.ts';
 
-const hoisted = vi.hoisted(() => ({
-  mockBasename: vi.fn(),
-  mockConvertAsyncToSync: vi.fn(),
-  mockExtname: vi.fn()
-}));
-
-vi.mock('obsidian-dev-utils/async', () => ({
-  convertAsyncToSync: hoisted.mockConvertAsyncToSync
-}));
-
-vi.mock('obsidian-dev-utils/path', () => ({
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-unsafe-return -- mock factory delegates to hoisted fn.
-  basename: (...args: unknown[]) => hoisted.mockBasename(...args),
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-unsafe-return -- mock factory delegates to hoisted fn.
-  extname: (...args: unknown[]) => hoisted.mockExtname(...args)
+// The real `convertAsyncToSync` wraps the change handler as fire-and-forget, so awaiting the registered
+// Listener would not await the inner async work. Stub it to identity (the sanctioned exception) so the test
+// Can capture and await the real `handleChange`. `basename`/`extname` are left as the real path utilities.
+vi.mock('obsidian-dev-utils/async', async (importOriginal) => ({
+  ...await importOriginal<typeof import('obsidian-dev-utils/async')>(),
+  convertAsyncToSync: vi.fn((fn: (...args: unknown[]) => unknown) => fn)
 }));
 
 interface CreateControlParams {
@@ -68,7 +59,6 @@ interface MockFileList {
 }
 
 let mockFileEl: MockFileInput;
-let capturedChangeHandler: (() => Promise<void>) | undefined;
 let mockDocumentAddEventListener: ReturnType<typeof vi.fn>;
 let mockDocumentRemoveEventListener: ReturnType<typeof vi.fn>;
 let mockSetTimeout: ReturnType<typeof vi.fn>;
@@ -109,9 +99,9 @@ function createMockFileEl(): MockFileInput {
     files: null,
     focus: vi.fn(),
     triggerChange: async () => {
-      if (capturedChangeHandler) {
-        await capturedChangeHandler();
-      }
+      const changeCall = el.addEventListener.mock.calls.find((call: unknown[]) => call[0] === 'change');
+      const changeHandler = changeCall?.[1] as (() => Promise<void>) | undefined;
+      await changeHandler?.();
     }
   };
   return el;
@@ -128,7 +118,6 @@ function createMockSettings(overrides?: Partial<PluginSettings>): ReadonlyDeep<P
 
 describe('InsertAttachmentsControl', () => {
   beforeEach(() => {
-    capturedChangeHandler = undefined;
     mockDocumentAddEventListener = vi.fn();
     mockDocumentRemoveEventListener = vi.fn();
     mockSetTimeout = vi.fn().mockReturnValue(42);
@@ -157,20 +146,6 @@ describe('InsertAttachmentsControl', () => {
       configurable: true,
       value: mockClearTimeout
     });
-
-    hoisted.mockConvertAsyncToSync.mockImplementation((fn: () => Promise<void>) => {
-      capturedChangeHandler = fn;
-      return fn;
-    });
-
-    hoisted.mockBasename.mockImplementation((name: string, ext?: string) => {
-      if (ext) {
-        return name.replace(ext, '');
-      }
-      return name;
-    });
-
-    hoisted.mockExtname.mockReturnValue('.png');
   });
 
   afterEach(() => {
