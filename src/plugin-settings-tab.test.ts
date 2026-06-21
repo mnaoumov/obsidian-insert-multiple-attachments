@@ -105,7 +105,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     const EXPECTED_SETTING_COUNT = 3;
     expect(mockContainerEl.children.length).toBe(EXPECTED_SETTING_COUNT);
@@ -115,7 +115,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     expect(capturedBinds.map((b) => b.key)).toContain('attachmentLinksPrefix');
   });
@@ -124,7 +124,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     expect(capturedBinds.map((b) => b.key)).toContain('attachmentLinksDelimiter');
   });
@@ -133,7 +133,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     expect(capturedBinds.map((b) => b.key)).toContain('attachmentLinksSuffix');
   });
@@ -142,7 +142,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     const prefixBind = capturedBinds.find((b) => b.key === 'attachmentLinksPrefix');
     const converter = prefixBind?.options?.pluginSettingsToComponentValueConverter;
@@ -155,7 +155,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     const prefixBind = capturedBinds.find((b) => b.key === 'attachmentLinksPrefix');
     const converter = prefixBind?.options?.pluginSettingsToComponentValueConverter;
@@ -168,7 +168,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     const prefixBind = capturedBinds.find((b) => b.key === 'attachmentLinksPrefix');
     const converter = prefixBind?.options?.componentToPluginSettingsValueConverter;
@@ -181,7 +181,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     const prefixBind = capturedBinds.find((b) => b.key === 'attachmentLinksPrefix');
     const converter = prefixBind?.options?.componentToPluginSettingsValueConverter;
@@ -194,7 +194,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     const prefixBind = capturedBinds.find((b) => b.key === 'attachmentLinksPrefix');
     const inputEl = prefixBind?.component.inputEl;
@@ -211,7 +211,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     const prefixBind = capturedBinds.find((b) => b.key === 'attachmentLinksPrefix');
     const inputEl = prefixBind?.component.inputEl;
@@ -234,7 +234,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     const prefixBind = capturedBinds.find((b) => b.key === 'attachmentLinksPrefix');
     const inputEl = prefixBind?.component.inputEl;
@@ -254,7 +254,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     const prefixBind = capturedBinds.find((b) => b.key === 'attachmentLinksPrefix');
     const inputEl = prefixBind?.component.inputEl;
@@ -274,7 +274,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     const prefixBind = capturedBinds.find((b) => b.key === 'attachmentLinksPrefix');
     const inputEl = prefixBind?.component.inputEl;

@@ -12,23 +12,11 @@ import {
 
 import type { PluginSettings } from './plugin-settings.ts';
 
-/**
- * Params for creating an {@link InsertAttachmentsControl}.
- */
 export interface InsertAttachmentsControlConstructorParams {
-  /**
-   * The Obsidian app instance.
-   */
   readonly app: App;
 
-  /**
-   * The editor to insert attachment links into.
-   */
   readonly editor: Editor;
 
-  /**
-   * The plugin settings.
-   */
   readonly pluginSettings: ReadonlyDeep<PluginSettings>;
 }
 
