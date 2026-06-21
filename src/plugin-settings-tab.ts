@@ -11,9 +11,8 @@ const VISIBLE_SPACE_CHARACTER = '␣';
 const VISIBLE_ENTER_CHARACTER = '↵';
 
 export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
-  public override display(): void {
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- super.display() calls the PluginSettingsTabBase override; the inherited @deprecated tag on Obsidian's SettingTab.display propagates via TS getJsDocTags.
-    super.display();
+  public override displayLegacy(): void {
+    super.displayLegacy();
 
     new Setting(this.containerEl)
       .setName('Attachment links prefix')

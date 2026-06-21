@@ -11,23 +11,11 @@ import type { PluginSettings } from '../plugin-settings.ts';
 
 import { InsertAttachmentsControl } from '../insert-attachments-control.ts';
 
-/**
- * Params for creating an {@link InvokeCommandHandler}.
- */
 export interface InvokeCommandHandlerConstructorParams {
-  /**
-   * The Obsidian app instance.
-   */
   readonly app: App;
 
-  /**
-   * A function that returns the current plugin settings.
-   */
   getPluginSettings(): ReadonlyDeep<PluginSettings>;
 
-  /**
-   * The name of the plugin.
-   */
   readonly pluginName: string;
 }
 
