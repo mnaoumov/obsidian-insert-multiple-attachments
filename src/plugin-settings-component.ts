@@ -5,7 +5,7 @@ import { PluginSettingsComponentBase } from 'obsidian-dev-utils/obsidian/compone
 
 import { PluginSettings } from './plugin-settings.ts';
 
-export interface PluginSettingsComponentConstructorParams {
+interface PluginSettingsComponentConstructorParams {
   readonly dataHandler: DataHandler;
   readonly pluginEventSource: PluginEventSource;
 }
