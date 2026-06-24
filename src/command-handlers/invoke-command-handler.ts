@@ -11,7 +11,7 @@ import type { PluginSettings } from '../plugin-settings.ts';
 
 import { InsertAttachmentsControl } from '../insert-attachments-control.ts';
 
-export interface InvokeCommandHandlerConstructorParams {
+interface InvokeCommandHandlerConstructorParams {
   readonly app: App;
 
   getPluginSettings(): ReadonlyDeep<PluginSettings>;

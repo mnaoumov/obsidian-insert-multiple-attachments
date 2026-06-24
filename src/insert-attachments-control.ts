@@ -12,7 +12,7 @@ import {
 
 import type { PluginSettings } from './plugin-settings.ts';
 
-export interface InsertAttachmentsControlConstructorParams {
+interface InsertAttachmentsControlConstructorParams {
   readonly app: App;
 
   readonly editor: Editor;
