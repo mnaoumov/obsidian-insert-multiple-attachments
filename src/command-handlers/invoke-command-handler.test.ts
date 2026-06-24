@@ -44,15 +44,15 @@ describe('InvokeCommandHandler', () => {
   });
 
   it('should set correct id', (): void => {
-    expect(createHandler().id).toBe('invoke');
+    expect(createHandler().buildCommand().id).toBe('invoke');
   });
 
   it('should set correct icon', (): void => {
-    expect(createHandler().icon).toBe('lucide-paperclip');
+    expect(createHandler().buildCommand().icon).toBe('lucide-paperclip');
   });
 
   it('should set correct name', (): void => {
-    expect(createHandler().name).toBe('Invoke');
+    expect(createHandler().buildCommand().name).toBe('Invoke');
   });
 
   it('should build a command with an editorCheckCallback', (): void => {
