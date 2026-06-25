@@ -1,27 +1,22 @@
 import type {
   App,
-  Editor,
-  MarkdownFileInfo
+  Editor
 } from 'obsidian';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { EditorCommandHandler } from 'obsidian-dev-utils/obsidian/command-handlers/editor-command-handler';
 
-import type { PluginSettings } from '../plugin-settings.ts';
+import type { PluginSettingsComponent } from '../plugin-settings-component.ts';
 
 import { InsertAttachmentsControl } from '../insert-attachments-control.ts';
 
 interface InvokeCommandHandlerConstructorParams {
   readonly app: App;
-
-  getPluginSettings(): ReadonlyDeep<PluginSettings>;
-
-  readonly pluginName: string;
+  readonly pluginSettingsComponent: PluginSettingsComponent;
 }
 
 export class InvokeCommandHandler extends EditorCommandHandler {
   private readonly app: App;
-  private readonly getPluginSettingsFn: () => ReadonlyDeep<PluginSettings>;
+  private readonly pluginSettingsComponent: PluginSettingsComponent;
 
   public constructor(params: InvokeCommandHandlerConstructorParams) {
     super({
@@ -30,14 +25,14 @@ export class InvokeCommandHandler extends EditorCommandHandler {
       name: 'Invoke'
     });
     this.app = params.app;
-    this.getPluginSettingsFn = params.getPluginSettings.bind(params);
+    this.pluginSettingsComponent = params.pluginSettingsComponent;
   }
 
-  protected override executeEditor(editor: Editor, _ctx: MarkdownFileInfo): void {
+  protected override executeEditor(editor: Editor): void {
     new InsertAttachmentsControl({
       app: this.app,
       editor,
-      pluginSettings: this.getPluginSettingsFn()
+      pluginSettingsComponent: this.pluginSettingsComponent
     });
   }
 }

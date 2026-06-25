@@ -2,7 +2,6 @@ import type {
   App,
   Editor
 } from 'obsidian';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { convertAsyncToSync } from 'obsidian-dev-utils/async';
 import {
@@ -10,14 +9,12 @@ import {
   extname
 } from 'obsidian-dev-utils/path';
 
-import type { PluginSettings } from './plugin-settings.ts';
+import type { PluginSettingsComponent } from './plugin-settings-component.ts';
 
 interface InsertAttachmentsControlConstructorParams {
   readonly app: App;
-
   readonly editor: Editor;
-
-  readonly pluginSettings: ReadonlyDeep<PluginSettings>;
+  readonly pluginSettingsComponent: PluginSettingsComponent;
 }
 
 export class InsertAttachmentsControl {
@@ -26,13 +23,13 @@ export class InsertAttachmentsControl {
   private readonly editor: Editor;
   private readonly fileEl: HTMLInputElement;
   private readonly handleFocusClickBound: (this: void) => void;
-  private readonly pluginSettings: ReadonlyDeep<PluginSettings>;
+  private readonly pluginSettingsComponent: PluginSettingsComponent;
   private timeoutId = 0;
 
   public constructor(params: InsertAttachmentsControlConstructorParams) {
     this.app = params.app;
     this.editor = params.editor;
-    this.pluginSettings = params.pluginSettings;
+    this.pluginSettingsComponent = params.pluginSettingsComponent;
     this.currentActiveDocument = activeDocument;
     this.handleFocusClickBound = this.handleFocusClick.bind(this);
     this.fileEl = this.currentActiveDocument.body.createEl('input', {
@@ -82,9 +79,9 @@ export class InsertAttachmentsControl {
       links.push(link);
     }
 
-    const linksStr = this.pluginSettings.attachmentLinksPrefix
-      + links.join(this.pluginSettings.attachmentLinksDelimiter)
-      + this.pluginSettings.attachmentLinksSuffix;
+    const linksStr = this.pluginSettingsComponent.settings.attachmentLinksPrefix
+      + links.join(this.pluginSettingsComponent.settings.attachmentLinksDelimiter)
+      + this.pluginSettingsComponent.settings.attachmentLinksSuffix;
     this.editor.replaceSelection(linksStr);
     this.detachFileEl();
   }
