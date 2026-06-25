@@ -3,7 +3,6 @@ import type {
   Editor,
   MarkdownFileInfo
 } from 'obsidian';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
 import {
@@ -14,7 +13,7 @@ import {
   vi
 } from 'vitest';
 
-import type { PluginSettings } from '../plugin-settings.ts';
+import type { PluginSettingsComponent } from '../plugin-settings-component.ts';
 
 import { InvokeCommandHandler } from './invoke-command-handler.ts';
 
@@ -26,11 +25,10 @@ vi.mock('../insert-attachments-control.ts', () => ({
   InsertAttachmentsControl: hoisted.mockInsertAttachmentsControlConstructor
 }));
 
-function createHandler(app?: App, settings?: ReadonlyDeep<PluginSettings>): InvokeCommandHandler {
+function createHandler(app?: App, pluginSettingsComponent?: PluginSettingsComponent): InvokeCommandHandler {
   return new InvokeCommandHandler({
     app: app ?? strictProxy<App>({}),
-    getPluginSettings: (): ReadonlyDeep<PluginSettings> => settings ?? strictProxy<PluginSettings>({}),
-    pluginName: 'test-plugin'
+    pluginSettingsComponent: pluginSettingsComponent ?? strictProxy<PluginSettingsComponent>({})
   });
 }
 
@@ -64,8 +62,8 @@ describe('InvokeCommandHandler', () => {
 
   it('should create InsertAttachmentsControl when the command executes', (): void => {
     const app = strictProxy<App>({});
-    const settings = strictProxy<PluginSettings>({});
-    const handler = createHandler(app, settings);
+    const pluginSettingsComponent = strictProxy<PluginSettingsComponent>({});
+    const handler = createHandler(app, pluginSettingsComponent);
 
     const editor = strictProxy<Editor>({});
     const ctx = strictProxy<MarkdownFileInfo>({});
@@ -75,7 +73,7 @@ describe('InvokeCommandHandler', () => {
     expect(hoisted.mockInsertAttachmentsControlConstructor).toHaveBeenCalledWith({
       app,
       editor,
-      pluginSettings: settings
+      pluginSettingsComponent
     });
   });
 

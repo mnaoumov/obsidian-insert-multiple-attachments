@@ -38,10 +38,6 @@ interface ObsidianComponentModule {
   Component: new () => object;
 }
 
-const hoisted = vi.hoisted(() => ({
-  settingsSentinel: {}
-}));
-
 async function loadableComponentStub(): Promise<ReturnType<typeof vi.fn>> {
   const { Component } = await vi.importActual<ObsidianComponentModule>('obsidian');
   // Vitest requires a non-arrow function for a mock invoked with `new`; it must return a fresh real
@@ -89,14 +85,13 @@ vi.mock('./plugin-settings-tab.ts', () => ({
   PluginSettingsTab: vi.fn()
 }));
 
-// The plugin's own settings component is added via `addChild` (so it must be loadable) and its `settings`
-// Getter is read by the `getPluginSettings` closure, so the stub exposes a sentinel settings object.
+// The plugin's own settings component is added via `addChild`, so it must be loadable. The stub returns a
+// Plain loadable object; the resolved instance is passed by reference to the settings tab and command handler.
 vi.mock('./plugin-settings-component.ts', () => ({
   // eslint-disable-next-line prefer-arrow-callback -- vitest requires a non-arrow function for `new`.
   PluginSettingsComponent: vi.fn(function pluginSettingsComponentStub() {
     return {
-      load: vi.fn(),
-      settings: hoisted.settingsSentinel
+      load: vi.fn()
     };
   })
 }));
@@ -179,14 +174,13 @@ describe('Plugin', () => {
       expect(MockMenuEventRegistrarComponent).toHaveBeenCalledWith(app);
     });
 
-    it('should create InvokeCommandHandler with the app, settings getter, and plugin name', async () => {
+    it('should create InvokeCommandHandler with the app and settings component', async () => {
       const plugin = new Plugin(app, manifest);
       await plugin.onload();
 
       const params = MockInvokeCommandHandler.mock.calls[0]?.[0];
       expect(params?.app).toBe(app);
-      expect(params?.pluginName).toBe(manifest.name);
-      expect(params?.getPluginSettings).toBeTypeOf('function');
+      expect(params?.pluginSettingsComponent).toBe(instanceOf(MockPluginSettingsComponent));
     });
 
     it('should create CommandHandlerComponent wiring the invoke command and menu registrar', async () => {
@@ -211,15 +205,6 @@ describe('Plugin', () => {
       expect(addChildSpy).toHaveBeenCalledWith(instanceOf(MockPluginSettingsTabComponent));
       expect(addChildSpy).toHaveBeenCalledWith(instanceOf(MockMenuEventRegistrarComponent));
       expect(addChildSpy).toHaveBeenCalledWith(instanceOf(MockCommandHandlerComponent));
-    });
-
-    it('should provide a getPluginSettings function that returns the component settings', async () => {
-      const plugin = new Plugin(app, manifest);
-      await plugin.onload();
-
-      const params = MockInvokeCommandHandler.mock.calls[0]?.[0];
-      const settings: unknown = params?.getPluginSettings();
-      expect(settings).toBe(hoisted.settingsSentinel);
     });
   });
 });

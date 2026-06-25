@@ -2,7 +2,6 @@ import type {
   App,
   Editor
 } from 'obsidian';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { castTo } from 'obsidian-dev-utils/object-utils';
 import {
@@ -14,6 +13,7 @@ import {
   vi
 } from 'vitest';
 
+import type { PluginSettingsComponent } from './plugin-settings-component.ts';
 import type { PluginSettings } from './plugin-settings.ts';
 
 import { InsertAttachmentsControl } from './insert-attachments-control.ts';
@@ -28,7 +28,7 @@ vi.mock('obsidian-dev-utils/async', async (importOriginal) => ({
 
 interface CreateControlParams {
   readonly app?: App;
-  readonly settings?: ReadonlyDeep<PluginSettings>;
+  readonly pluginSettingsComponent?: PluginSettingsComponent;
 }
 
 interface MockActiveFile {
@@ -67,12 +67,12 @@ let mockClearTimeout: ReturnType<typeof vi.fn>;
 function createControl(params?: CreateControlParams): InsertAttachmentsControl {
   const app = params?.app ?? createMockApp();
   const editor = castTo<Editor>({ replaceSelection: vi.fn() });
-  const settings = params?.settings ?? createMockSettings();
+  const pluginSettingsComponent = params?.pluginSettingsComponent ?? createMockComponent();
 
   return new InsertAttachmentsControl({
     app,
     editor,
-    pluginSettings: settings
+    pluginSettingsComponent
   });
 }
 
@@ -91,6 +91,17 @@ function createMockApp(overrides?: MockAppOverrides): App {
   });
 }
 
+function createMockComponent(overrides?: Partial<PluginSettings>): PluginSettingsComponent {
+  return castTo<PluginSettingsComponent>({
+    settings: {
+      attachmentLinksDelimiter: '\n\n',
+      attachmentLinksPrefix: '',
+      attachmentLinksSuffix: '',
+      ...overrides
+    }
+  });
+}
+
 function createMockFileEl(): MockFileInput {
   const el: MockFileInput = {
     addEventListener: vi.fn(),
@@ -105,15 +116,6 @@ function createMockFileEl(): MockFileInput {
     }
   };
   return el;
-}
-
-function createMockSettings(overrides?: Partial<PluginSettings>): ReadonlyDeep<PluginSettings> {
-  return {
-    attachmentLinksDelimiter: '\n\n',
-    attachmentLinksPrefix: '',
-    attachmentLinksSuffix: '',
-    ...overrides
-  };
 }
 
 describe('InsertAttachmentsControl', () => {
@@ -212,9 +214,9 @@ describe('InsertAttachmentsControl', () => {
   it('should insert link for each selected file', async (): Promise<void> => {
     const app = createMockApp({ generateLink: '![[attachment.png]]' });
     const editor = castTo<Editor>({ replaceSelection: vi.fn() });
-    const settings = createMockSettings();
+    const pluginSettingsComponent = createMockComponent();
 
-    new InsertAttachmentsControl({ app, editor, pluginSettings: settings });
+    new InsertAttachmentsControl({ app, editor, pluginSettingsComponent });
 
     const mockData = new ArrayBuffer(8);
     const mockFiles: MockFile[] = [
@@ -232,9 +234,9 @@ describe('InsertAttachmentsControl', () => {
   it('should prefix link with ! when it does not start with !', async (): Promise<void> => {
     const app = createMockApp({ generateLink: '[[attachment.png]]' });
     const editor = castTo<Editor>({ replaceSelection: vi.fn() });
-    const settings = createMockSettings();
+    const pluginSettingsComponent = createMockComponent();
 
-    new InsertAttachmentsControl({ app, editor, pluginSettings: settings });
+    new InsertAttachmentsControl({ app, editor, pluginSettingsComponent });
 
     const mockData = new ArrayBuffer(8);
     const mockFiles: MockFile[] = [
@@ -252,9 +254,9 @@ describe('InsertAttachmentsControl', () => {
   it('should not double-prefix ! when link already starts with !', async (): Promise<void> => {
     const app = createMockApp({ generateLink: '![[attachment.png]]' });
     const editor = castTo<Editor>({ replaceSelection: vi.fn() });
-    const settings = createMockSettings();
+    const pluginSettingsComponent = createMockComponent();
 
-    new InsertAttachmentsControl({ app, editor, pluginSettings: settings });
+    new InsertAttachmentsControl({ app, editor, pluginSettingsComponent });
 
     const mockData = new ArrayBuffer(8);
     const mockFiles: MockFile[] = [
@@ -272,12 +274,12 @@ describe('InsertAttachmentsControl', () => {
   it('should apply prefix and suffix from settings', async (): Promise<void> => {
     const app = createMockApp({ generateLink: '![[photo.png]]' });
     const editor = castTo<Editor>({ replaceSelection: vi.fn() });
-    const settings = createMockSettings({
+    const pluginSettingsComponent = createMockComponent({
       attachmentLinksPrefix: 'START\n',
       attachmentLinksSuffix: '\nEND'
     });
 
-    new InsertAttachmentsControl({ app, editor, pluginSettings: settings });
+    new InsertAttachmentsControl({ app, editor, pluginSettingsComponent });
 
     const mockData = new ArrayBuffer(8);
     const mockFiles: MockFile[] = [
@@ -295,9 +297,9 @@ describe('InsertAttachmentsControl', () => {
   it('should join multiple links with delimiter', async (): Promise<void> => {
     const app = createMockApp({ generateLink: '![[file.png]]' });
     const editor = castTo<Editor>({ replaceSelection: vi.fn() });
-    const settings = createMockSettings({ attachmentLinksDelimiter: '---' });
+    const pluginSettingsComponent = createMockComponent({ attachmentLinksDelimiter: '---' });
 
-    new InsertAttachmentsControl({ app, editor, pluginSettings: settings });
+    new InsertAttachmentsControl({ app, editor, pluginSettingsComponent });
 
     const mockData = new ArrayBuffer(8);
     const mockFiles: MockFile[] = [
