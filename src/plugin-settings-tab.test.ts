@@ -54,17 +54,17 @@ function createSettingsTab(): PluginSettingsTab {
 }
 
 function findBind(key: keyof PluginSettings): BindCapture {
-  const call = ensureNonNullable(bindSpy.mock.calls.find((bindCall) => bindCall[1] === key));
+  const call = ensureNonNullable(bindSpy.mock.calls.find((bindCall) => bindCall[0].propertyName === key));
   return {
-    component: castTo<TextComponent>(call[0]),
-    options: castTo<WhitespaceBindOptions>(call[2])
+    component: castTo<TextComponent>(call[0].valueComponent),
+    options: castTo<WhitespaceBindOptions>(call[0])
   };
 }
 
 describe('PluginSettingsTab', () => {
   beforeEach(() => {
     app = App.createConfigured__().asOriginalType__();
-    bindSpy = vi.spyOn(PluginSettingsTab.prototype, 'bind').mockImplementation((valueComponent) => valueComponent);
+    bindSpy = vi.spyOn(PluginSettingsTab.prototype, 'bind').mockImplementation((params) => params.valueComponent);
   });
 
   afterEach(() => {
@@ -89,7 +89,7 @@ describe('PluginSettingsTab', () => {
 
     tab.displayLegacy();
 
-    expect(bindSpy.mock.calls.map((bindCall) => bindCall[1])).toEqual([
+    expect(bindSpy.mock.calls.map((bindCall) => bindCall[0].propertyName)).toEqual([
       'attachmentLinksPrefix',
       'attachmentLinksDelimiter',
       'attachmentLinksSuffix'

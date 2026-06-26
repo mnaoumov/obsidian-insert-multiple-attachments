@@ -18,9 +18,11 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
       .setName('Attachment links prefix')
       .setDesc('The text to insert before attachment links.')
       .addText((text) => {
-        this.bind(text, 'attachmentLinksPrefix', {
+        this.bind({
           componentToPluginSettingsValueConverter: restoreWhitespaceCharacters,
-          pluginSettingsToComponentValueConverter: showWhitespaceCharacters
+          pluginSettingsToComponentValueConverter: showWhitespaceCharacters,
+          propertyName: 'attachmentLinksPrefix',
+          valueComponent: text
         });
 
         handleWhitespace(text);
@@ -30,10 +32,12 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
       .setName('Attachment links delimiter')
       .setDesc('The delimiter to insert between attachment links.')
       .addText((text) => {
-        this.bind(text, 'attachmentLinksDelimiter', {
+        this.bind({
           componentToPluginSettingsValueConverter: restoreWhitespaceCharacters,
           pluginSettingsToComponentValueConverter: showWhitespaceCharacters,
-          shouldShowPlaceholderForDefaultValues: false
+          propertyName: 'attachmentLinksDelimiter',
+          shouldShowPlaceholderForDefaultValues: false,
+          valueComponent: text
         });
 
         handleWhitespace(text);
@@ -43,9 +47,11 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
       .setName('Attachment links suffix')
       .setDesc('The text to insert after attachment links.')
       .addText((text) => {
-        this.bind(text, 'attachmentLinksSuffix', {
+        this.bind({
           componentToPluginSettingsValueConverter: restoreWhitespaceCharacters,
-          pluginSettingsToComponentValueConverter: showWhitespaceCharacters
+          pluginSettingsToComponentValueConverter: showWhitespaceCharacters,
+          propertyName: 'attachmentLinksSuffix',
+          valueComponent: text
         });
 
         handleWhitespace(text);
