@@ -38,7 +38,3 @@ Insert Multiple Attachments is an Obsidian plugin that allows inserting multiple
   - `command-handlers/invoke-command-handler.ts` — `InvokeCommandHandler extends EditorCommandHandler` (id `invoke`, icon `lucide-paperclip`); `executeEditor` instantiates `InsertAttachmentsControl`.
   - `styles/main.scss` — plugin styles; `styles/scss.d.ts` — SCSS module type declaration.
 - **`main` field** points to `src/main.ts` (Obsidian plugin source entry; built artifact is `dist/build/main.js`, not published to npm).
-
-## Known Issues
-
-None.
