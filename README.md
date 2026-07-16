@@ -31,7 +31,7 @@ To show them, run the following command:
 window.DEBUG.enable('insert-multiple-attachments');
 ```
 
-For more details, refer to the [documentation](https://github.com/mnaoumov/obsidian-dev-utils/blob/main/docs/debugging.md).
+For more details, refer to the [documentation](https://mnaoumov.dev/obsidian-dev-utils/guides/debugging/).
 
 ## Support
 
