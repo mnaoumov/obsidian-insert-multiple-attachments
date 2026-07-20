@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 1.3.14
+
+- docs: standardize demo-vault README
+- docs: drop per-plugin demo-vault setup notes (bootstrap covered by ODU harness)
+- Merge branch 'T104': create the Insert Multiple Attachments demo vault (S2)
+- chore: update libs
+- docs: update
+- docs: migrate to AGENTS.md
+
 ## 1.3.13
 
 - chore: update libs
