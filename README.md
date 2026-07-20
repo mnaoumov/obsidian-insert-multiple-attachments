@@ -9,6 +9,14 @@ This is a plugin for [Obsidian](https://obsidian.md/) that allows to insert mult
 
 It just modifies the built-in `Insert Attachment` command to add support for multiple files.
 
+## Demo vault
+
+A demo vault with usage examples ships with every release. You can access it via any of the following:
+
+1. Running the **Insert Multiple Attachments: Open demo vault** command.
+2. Downloading `insert-multiple-attachments.demo-vault.zip` from the [Releases](https://github.com/mnaoumov/obsidian-insert-multiple-attachments/releases).
+3. Browsing its source in [`demo-vault/`](./demo-vault/README.md) in this repository.
+
 ## Installation
 
 The plugin is available in [the official Community Plugins repository](https://obsidian.md/plugins?id=insert-multiple-attachments).

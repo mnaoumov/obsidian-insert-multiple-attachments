@@ -1,0 +1,1 @@
+Sample attachment two. Selecting both sample files at once demonstrates the multiple-attachment insertion that Obsidian does not support out of the box.

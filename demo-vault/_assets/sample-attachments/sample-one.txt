@@ -1,0 +1,1 @@
+Sample attachment one. Pick this file (together with sample-two) when you run the Insert Multiple Attachments command to see several attachments inserted at once.
