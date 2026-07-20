@@ -3,8 +3,10 @@ import type {
   PluginManifest
 } from 'obsidian';
 import type { CommandHandlerComponent } from 'obsidian-dev-utils/obsidian/command-handlers/command-handler-component';
+import type { PluginNoticeComponent } from 'obsidian-dev-utils/obsidian/components/plugin-notice-component';
 
 import { castTo } from 'obsidian-dev-utils/object-utils';
+import { OpenDemoVaultCommandHandler } from 'obsidian-dev-utils/obsidian/command-handlers/open-demo-vault-command-handler';
 import { PluginSettingsTabComponent } from 'obsidian-dev-utils/obsidian/components/plugin-settings-tab-component';
 import { PluginDataHandler } from 'obsidian-dev-utils/obsidian/data-handler';
 import { PluginEventSourceImpl } from 'obsidian-dev-utils/obsidian/plugin/plugin-event-source';
@@ -56,6 +58,10 @@ vi.mock('./command-handlers/invoke-command-handler.ts', () => ({
   InvokeCommandHandler: vi.fn()
 }));
 
+vi.mock('obsidian-dev-utils/obsidian/command-handlers/open-demo-vault-command-handler', () => ({
+  OpenDemoVaultCommandHandler: vi.fn()
+}));
+
 vi.mock('./plugin-settings-tab.ts', () => ({
   PluginSettingsTab: vi.fn()
 }));
@@ -75,6 +81,7 @@ const MockPluginSettingsTabComponent = vi.mocked(PluginSettingsTabComponent);
 const MockPluginDataHandler = vi.mocked(PluginDataHandler);
 const MockPluginEventSourceImpl = vi.mocked(PluginEventSourceImpl);
 const MockInvokeCommandHandler = vi.mocked(InvokeCommandHandler);
+const MockOpenDemoVaultCommandHandler = vi.mocked(OpenDemoVaultCommandHandler);
 const MockPluginSettingsComponent = vi.mocked(PluginSettingsComponent);
 const MockPluginSettingsTab = vi.mocked(PluginSettingsTab);
 
@@ -92,19 +99,24 @@ const manifest: PluginManifest = {
 // `onload()` (notice/context/debug components) is dev-utils' own concern, covered by its tests.
 interface PluginInternals {
   _commandHandlerComponent: CommandHandlerComponent;
+  _pluginNoticeComponent: PluginNoticeComponent;
   onloadImpl(): void;
 }
 
 let app: AppOriginal;
+let pluginNoticeComponent: PluginNoticeComponent;
 
 function instanceOf(mock: ReturnType<typeof vi.fn>): unknown {
   return mock.mock.results[0]?.value;
 }
 
+// `pluginNoticeComponent` is a getter that throws when its backing field is unset, so seed it too — the
+// Open-demo-vault handler reads it. The base `onload()` would normally set it, but that is dev-utils' concern.
 function seedAndRun(plugin: Plugin): ReturnType<typeof vi.fn> {
   const internals = castTo<PluginInternals>(plugin);
   const registerCommandHandlers = vi.fn();
   internals._commandHandlerComponent = strictProxy<CommandHandlerComponent>({ registerCommandHandlers });
+  internals._pluginNoticeComponent = pluginNoticeComponent;
   internals.onloadImpl();
   return registerCommandHandlers;
 }
@@ -113,6 +125,7 @@ describe('Plugin', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     app = App.createConfigured__().asOriginalType__();
+    pluginNoticeComponent = strictProxy<PluginNoticeComponent>({});
   });
 
   it('should create a plugin instance', () => {
@@ -159,12 +172,26 @@ describe('Plugin', () => {
       expect(params?.pluginSettingsComponent).toBe(instanceOf(MockPluginSettingsComponent));
     });
 
-    it('should register the invoke command handler on the base command-handler component', () => {
+    it('should create OpenDemoVaultCommandHandler with the app, plugin id, notice component, and version', () => {
+      const plugin = new Plugin(app, manifest);
+      seedAndRun(plugin);
+
+      const params = MockOpenDemoVaultCommandHandler.mock.calls[0]?.[0];
+      expect(params?.app).toBe(app);
+      expect(params?.pluginId).toBe(manifest.id);
+      expect(params?.pluginNoticeComponent).toBe(pluginNoticeComponent);
+      expect(params?.pluginVersion).toBe(manifest.version);
+    });
+
+    it('should register the invoke and open demo vault command handlers on the base command-handler component', () => {
       const plugin = new Plugin(app, manifest);
       const registerCommandHandlers = seedAndRun(plugin);
 
       expect(registerCommandHandlers).toHaveBeenCalledOnce();
-      expect(registerCommandHandlers).toHaveBeenCalledWith([instanceOf(MockInvokeCommandHandler)]);
+      expect(registerCommandHandlers).toHaveBeenCalledWith([
+        instanceOf(MockInvokeCommandHandler),
+        instanceOf(MockOpenDemoVaultCommandHandler)
+      ]);
     });
 
     it('should add the two plugin components as children', () => {
