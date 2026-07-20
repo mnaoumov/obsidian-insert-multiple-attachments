@@ -1,9 +1,8 @@
-# Insert Multiple Attachments demo vault
+This is an [Obsidian](https://obsidian.md/) vault demonstrating features of the [Insert Multiple Attachments](https://github.com/mnaoumov/obsidian-insert-multiple-attachments) plugin.
 
-A small Obsidian vault that demonstrates the [Insert Multiple Attachments](https://github.com/mnaoumov/obsidian-insert-multiple-attachments) plugin - it adds a command that opens a multi-select file picker so you can insert several attachments at once, each as its own embed, with configurable prefix, delimiter, and suffix text around them.
+## Opening this vault
 
-Open [00 Start](<./00 Start.md>) and work through the notes. Open [Playground](<./Playground.md>), run **Insert Multiple Attachments: Invoke**, and select more than one file (for example the two files in `_assets/sample-attachments/`).
+- **If you already have the plugin installed**, run the **Insert Multiple Attachments: Open demo vault** command — it downloads and opens the latest demo vault automatically.
+- **Otherwise**, download `insert-multiple-attachments.demo-vault.zip` from the [plugin releases](https://github.com/mnaoumov/obsidian-insert-multiple-attachments/releases), unzip it, and in Obsidian choose `Manage vaults...` → `Open folder as vault` → select the unzipped folder.
 
-## First open
-
-The first time you open this vault, Obsidian treats it as **untrusted**, so the bundled plugins are listed but not loaded until you **Trust author and enable plugins** and reload. After that, the Demo Vault Helper opens the start note for you.
+On first open, Obsidian treats the vault as untrusted — choose **Trust author and enable plugins** (or enable Community plugins manually), then open [00 Start](<./00 Start.md>).
