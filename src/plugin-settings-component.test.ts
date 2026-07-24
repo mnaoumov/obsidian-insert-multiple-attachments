@@ -92,7 +92,9 @@ describe('PluginSettingsComponent', () => {
     expect(component.settings).toEqual({
       attachmentLinksDelimiter: '\n\n',
       attachmentLinksPrefix: '',
-      attachmentLinksSuffix: ''
+      attachmentLinksSuffix: '',
+      shouldShowInEditorContextMenu: true,
+      shouldShowRibbonIcon: true
     });
   });
 });

@@ -4,6 +4,7 @@ import type {
   MarkdownFileInfo
 } from 'obsidian';
 
+import { castTo } from 'obsidian-dev-utils/object-utils';
 import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
 import {
   beforeEach,
@@ -16,6 +17,17 @@ import {
 import type { PluginSettingsComponent } from '../plugin-settings-component.ts';
 
 import { InvokeCommandHandler } from './invoke-command-handler.ts';
+
+interface EditorMenuGate {
+  shouldAddToEditorMenu(): boolean;
+}
+
+function createHandlerWithContextMenuSetting(shouldShowInEditorContextMenu: boolean): InvokeCommandHandler {
+  const pluginSettingsComponent = strictProxy<PluginSettingsComponent>({
+    settings: castTo<PluginSettingsComponent['settings']>({ shouldShowInEditorContextMenu })
+  });
+  return createHandler(undefined, pluginSettingsComponent);
+}
 
 const hoisted = vi.hoisted(() => ({
   mockInsertAttachmentsControlConstructor: vi.fn()
@@ -87,5 +99,17 @@ describe('InvokeCommandHandler', () => {
 
     expect(result).toBe(true);
     expect(hoisted.mockInsertAttachmentsControlConstructor).not.toHaveBeenCalled();
+  });
+
+  it('should add to the editor menu when the context-menu setting is enabled', (): void => {
+    const handler = createHandlerWithContextMenuSetting(true);
+
+    expect(castTo<EditorMenuGate>(handler).shouldAddToEditorMenu()).toBe(true);
+  });
+
+  it('should not add to the editor menu when the context-menu setting is disabled', (): void => {
+    const handler = createHandlerWithContextMenuSetting(false);
+
+    expect(castTo<EditorMenuGate>(handler).shouldAddToEditorMenu()).toBe(false);
   });
 });

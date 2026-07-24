@@ -10,6 +10,7 @@ import { OpenDemoVaultCommandHandler } from 'obsidian-dev-utils/obsidian/command
 import { PluginSettingsTabComponent } from 'obsidian-dev-utils/obsidian/components/plugin-settings-tab-component';
 import { PluginDataHandler } from 'obsidian-dev-utils/obsidian/data-handler';
 import { PluginEventSourceImpl } from 'obsidian-dev-utils/obsidian/plugin/plugin-event-source';
+import { PluginRibbonIconRegistrar } from 'obsidian-dev-utils/obsidian/ribbon-icon-registrar';
 import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
 import { App } from 'obsidian-test-mocks/obsidian';
 import {
@@ -24,6 +25,7 @@ import { InvokeCommandHandler } from './command-handlers/invoke-command-handler.
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
 import { PluginSettingsTab } from './plugin-settings-tab.ts';
 import { Plugin } from './plugin.ts';
+import { RibbonIconComponent } from './ribbon-icon-component.ts';
 
 // A dev-utils component added via `addChild` must be loadable, so its stub returns a real `Component`. The
 // Flowing instance is the stub's return value (`mock.results[0].value`), not the discarded `this`.
@@ -62,8 +64,16 @@ vi.mock('obsidian-dev-utils/obsidian/command-handlers/open-demo-vault-command-ha
   OpenDemoVaultCommandHandler: vi.fn()
 }));
 
+vi.mock('obsidian-dev-utils/obsidian/ribbon-icon-registrar', () => ({
+  PluginRibbonIconRegistrar: vi.fn()
+}));
+
 vi.mock('./plugin-settings-tab.ts', () => ({
   PluginSettingsTab: vi.fn()
+}));
+
+vi.mock('./ribbon-icon-component.ts', async () => ({
+  RibbonIconComponent: await loadableComponentStub()
 }));
 
 // The plugin's own settings component is added via `addChild`, so it must be loadable. The stub returns a
@@ -84,6 +94,8 @@ const MockInvokeCommandHandler = vi.mocked(InvokeCommandHandler);
 const MockOpenDemoVaultCommandHandler = vi.mocked(OpenDemoVaultCommandHandler);
 const MockPluginSettingsComponent = vi.mocked(PluginSettingsComponent);
 const MockPluginSettingsTab = vi.mocked(PluginSettingsTab);
+const MockRibbonIconComponent = vi.mocked(RibbonIconComponent);
+const MockPluginRibbonIconRegistrar = vi.mocked(PluginRibbonIconRegistrar);
 
 const manifest: PluginManifest = {
   author: 'test',
@@ -183,6 +195,24 @@ describe('Plugin', () => {
       expect(params?.pluginVersion).toBe(manifest.version);
     });
 
+    it('should create RibbonIconComponent with the app, notice component, settings component, and ribbon registrar', () => {
+      const plugin = new Plugin(app, manifest);
+      seedAndRun(plugin);
+
+      const params = MockRibbonIconComponent.mock.calls[0]?.[0];
+      expect(params?.app).toBe(app);
+      expect(params?.pluginNoticeComponent).toBe(pluginNoticeComponent);
+      expect(params?.pluginSettingsComponent).toBe(instanceOf(MockPluginSettingsComponent));
+      expect(params?.ribbonIconRegistrar).toBe(MockPluginRibbonIconRegistrar.mock.instances[0]);
+    });
+
+    it('should create the ribbon registrar with the plugin', () => {
+      const plugin = new Plugin(app, manifest);
+      seedAndRun(plugin);
+
+      expect(MockPluginRibbonIconRegistrar).toHaveBeenCalledWith(plugin);
+    });
+
     it('should register the invoke and open demo vault command handlers on the base command-handler component', () => {
       const plugin = new Plugin(app, manifest);
       const registerCommandHandlers = seedAndRun(plugin);
@@ -194,15 +224,16 @@ describe('Plugin', () => {
       ]);
     });
 
-    it('should add the two plugin components as children', () => {
+    it('should add the three plugin components as children', () => {
       const plugin = new Plugin(app, manifest);
       const addChildSpy = vi.spyOn(plugin, 'addChild');
       seedAndRun(plugin);
 
       expect(addChildSpy).toHaveBeenCalledWith(instanceOf(MockPluginSettingsComponent));
       expect(addChildSpy).toHaveBeenCalledWith(instanceOf(MockPluginSettingsTabComponent));
+      expect(addChildSpy).toHaveBeenCalledWith(instanceOf(MockRibbonIconComponent));
 
-      const EXPECTED_ADD_CHILD_CALLS = 2;
+      const EXPECTED_ADD_CHILD_CALLS = 3;
       expect(addChildSpy).toHaveBeenCalledTimes(EXPECTED_ADD_CHILD_CALLS);
     });
   });

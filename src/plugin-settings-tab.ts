@@ -56,6 +56,26 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
 
         handleWhitespace(text);
       });
+
+    new Setting(this.containerEl)
+      .setName('Show ribbon icon')
+      .setDesc('Show an icon in the left ribbon to insert multiple attachments.')
+      .addToggle((toggle) => {
+        this.bind({
+          propertyName: 'shouldShowRibbonIcon',
+          valueComponent: toggle
+        });
+      });
+
+    new Setting(this.containerEl)
+      .setName('Show in editor context menu')
+      .setDesc('Show an item in the editor right-click menu to insert multiple attachments.')
+      .addToggle((toggle) => {
+        this.bind({
+          propertyName: 'shouldShowInEditorContextMenu',
+          valueComponent: toggle
+        });
+      });
   }
 }
 
