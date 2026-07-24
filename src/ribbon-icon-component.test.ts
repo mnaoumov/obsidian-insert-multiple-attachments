@@ -47,7 +47,7 @@ interface Harness {
   pluginSettingsComponent: PluginSettingsComponent;
   ribbonIconEl: HTMLElement;
   settings: PluginSettings;
-  showNotice: Mock<(message: string) => void>;
+  showNotice: Mock<PluginNoticeComponent['showNotice']>;
 }
 
 function createHarness(options?: CreateHarnessOptions): Harness {
@@ -66,7 +66,7 @@ function createHarness(options?: CreateHarnessOptions): Harness {
   const addRibbonIcon: Mock<(params: RibbonIconRegistrarAddRibbonIconParams) => HTMLElement> = vi.fn(() => ribbonIconEl);
   const ribbonIconRegistrar = strictProxy<RibbonIconRegistrar>({ addRibbonIcon });
 
-  const showNotice: Mock<(message: string) => void> = vi.fn();
+  const showNotice = vi.fn<PluginNoticeComponent['showNotice']>();
   const pluginNoticeComponent = strictProxy<PluginNoticeComponent>({ showNotice });
 
   const activeEditor = options && 'activeEditor' in options ? options.activeEditor : strictProxy<Editor>({});
