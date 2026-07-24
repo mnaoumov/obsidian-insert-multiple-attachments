@@ -20,6 +20,7 @@ export class InvokeCommandHandler extends EditorCommandHandler {
 
   public constructor(params: InvokeCommandHandlerConstructorParams) {
     super({
+      editorMenuItemName: 'Insert multiple attachments',
       icon: 'lucide-paperclip',
       id: 'invoke',
       name: 'Invoke'
@@ -34,5 +35,9 @@ export class InvokeCommandHandler extends EditorCommandHandler {
       editor,
       pluginSettingsComponent: this.pluginSettingsComponent
     });
+  }
+
+  protected override shouldAddToEditorMenu(): boolean {
+    return this.pluginSettingsComponent.settings.shouldShowInEditorContextMenu;
   }
 }

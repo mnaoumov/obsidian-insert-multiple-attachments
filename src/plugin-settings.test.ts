@@ -24,4 +24,16 @@ describe('PluginSettings', () => {
 
     expect(settings.attachmentLinksSuffix).toBe('');
   });
+
+  it('should have shouldShowRibbonIcon default to true', () => {
+    const settings = new PluginSettings();
+
+    expect(settings.shouldShowRibbonIcon).toBe(true);
+  });
+
+  it('should have shouldShowInEditorContextMenu default to true', () => {
+    const settings = new PluginSettings();
+
+    expect(settings.shouldShowInEditorContextMenu).toBe(true);
+  });
 });

@@ -75,16 +75,16 @@ describe('PluginSettingsTab', () => {
     expect(createSettingsTab()).toBeInstanceOf(PluginSettingsTab);
   });
 
-  it('should render three settings on display', () => {
+  it('should render five settings on display', () => {
     const tab = createSettingsTab();
 
     tab.displayLegacy();
 
-    const EXPECTED_SETTING_COUNT = 3;
+    const EXPECTED_SETTING_COUNT = 5;
     expect(tab.containerEl.children.length).toBe(EXPECTED_SETTING_COUNT);
   });
 
-  it('should bind the three whitespace-aware settings', () => {
+  it('should bind every setting to its property in order', () => {
     const tab = createSettingsTab();
 
     tab.displayLegacy();
@@ -92,7 +92,9 @@ describe('PluginSettingsTab', () => {
     expect(bindSpy.mock.calls.map((bindCall) => bindCall[0].propertyName)).toEqual([
       'attachmentLinksPrefix',
       'attachmentLinksDelimiter',
-      'attachmentLinksSuffix'
+      'attachmentLinksSuffix',
+      'shouldShowRibbonIcon',
+      'shouldShowInEditorContextMenu'
     ]);
   });
 

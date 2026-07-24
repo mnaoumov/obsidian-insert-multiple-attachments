@@ -3,10 +3,12 @@ import { PluginSettingsTabComponent } from 'obsidian-dev-utils/obsidian/componen
 import { PluginDataHandler } from 'obsidian-dev-utils/obsidian/data-handler';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/plugin/plugin';
 import { PluginEventSourceImpl } from 'obsidian-dev-utils/obsidian/plugin/plugin-event-source';
+import { PluginRibbonIconRegistrar } from 'obsidian-dev-utils/obsidian/ribbon-icon-registrar';
 
 import { InvokeCommandHandler } from './command-handlers/invoke-command-handler.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
 import { PluginSettingsTab } from './plugin-settings-tab.ts';
+import { RibbonIconComponent } from './ribbon-icon-component.ts';
 
 export class Plugin extends PluginBase {
   protected override onloadImpl(): void {
@@ -23,6 +25,14 @@ export class Plugin extends PluginBase {
           plugin: this,
           pluginSettingsComponent
         })
+      })
+    );
+    this.addChild(
+      new RibbonIconComponent({
+        app: this.app,
+        pluginNoticeComponent: this.pluginNoticeComponent,
+        pluginSettingsComponent,
+        ribbonIconRegistrar: new PluginRibbonIconRegistrar(this)
       })
     );
     this.commandHandlerComponent.registerCommandHandlers([

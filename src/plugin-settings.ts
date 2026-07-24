@@ -2,4 +2,6 @@ export class PluginSettings {
   public attachmentLinksDelimiter = '\n\n';
   public attachmentLinksPrefix = '';
   public attachmentLinksSuffix = '';
+  public shouldShowInEditorContextMenu = true;
+  public shouldShowRibbonIcon = true;
 }

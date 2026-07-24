@@ -9,6 +9,22 @@ This is a plugin for [Obsidian](https://obsidian.md/) that allows to insert mult
 
 It just modifies the built-in `Insert Attachment` command to add support for multiple files.
 
+## Usage
+
+You can insert multiple attachments into the active note in any of the following ways:
+
+1. Running the **Insert Multiple Attachments: Invoke** command from the command palette.
+2. Clicking the ribbon icon (the paperclip in the left sidebar).
+3. Selecting **Insert multiple attachments** from the editor right-click menu.
+
+Each file you pick is saved as an attachment and embedded at the cursor.
+
+## Settings
+
+- **Attachment links prefix / delimiter / suffix** — control the text inserted before, between, and after the generated attachment links.
+- **Show ribbon icon** — toggle the ribbon icon on or off (on by default).
+- **Show in editor context menu** — toggle the editor right-click menu item on or off (on by default).
+
 ## Demo vault
 
 A demo vault with usage examples ships with every release. You can access it via any of the following:

@@ -5,9 +5,13 @@ import {
   it
 } from 'vitest';
 
+import { registerInsertAttachmentsEntryPointsSuite } from './insert-attachments-entry-points-shared.integration.test.ts';
+
 describe('Smoke test', () => {
   it('should load plugin on Desktop', () => {
     const vault = getTempVault();
     expect(vault.path).toBeTruthy();
   });
 });
+
+registerInsertAttachmentsEntryPointsSuite('Desktop');
