@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.3.17
+
+- feat: re #8
+- chore: update libs
+
 ## 1.3.16
 
 - chore: update libs
