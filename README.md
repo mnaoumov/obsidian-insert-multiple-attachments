@@ -30,7 +30,7 @@ Each file you pick is saved as an attachment and embedded at the cursor.
 A demo vault with usage examples ships with every release. You can access it via any of the following:
 
 1. Running the **Insert Multiple Attachments: Open demo vault** command.
-2. Downloading `insert-multiple-attachments.demo-vault.zip` from the [Releases](https://github.com/mnaoumov/obsidian-insert-multiple-attachments/releases).
+2. Downloading `insert-multiple-attachments-demo-vault-<version>.zip` (`<version>` is the release version) from the [Releases](https://github.com/mnaoumov/obsidian-insert-multiple-attachments/releases).
 3. Browsing its source in [`demo-vault/`](./demo-vault/README.md) in this repository.
 
 ## Installation
