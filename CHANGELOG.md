@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.4.0
+
+- refactor(settings): move the settings tab onto the declarative settings API
+- chore: update libs and clear the npm audit
+- docs: fix the demo vault download instructions
+
 ## 1.3.17
 
 - feat: re #8
