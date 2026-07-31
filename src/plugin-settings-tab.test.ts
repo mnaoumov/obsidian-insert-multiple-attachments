@@ -1,12 +1,14 @@
 import type {
   App as AppOriginal,
   Plugin,
+  SettingGroup,
   TextComponent
 } from 'obsidian';
 import type { PluginSettingsComponentBase } from 'obsidian-dev-utils/obsidian/components/plugin-settings-component';
 import type { MockInstance } from 'vitest';
 
 import { castTo } from 'obsidian-dev-utils/object-utils';
+import { SettingEx } from 'obsidian-dev-utils/obsidian/setting-ex';
 import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
 import { ensureNonNullable } from 'obsidian-dev-utils/type-guards';
 import { App } from 'obsidian-test-mocks/obsidian';
@@ -61,6 +63,20 @@ function findBind(key: keyof PluginSettings): BindCapture {
   };
 }
 
+/**
+ * Invokes every declared row's `render` callback the way Obsidian does when the tab is opened, so the
+ * bindings are still exercised now that the rows are declarative.
+ *
+ * @param tab - The settings tab.
+ */
+function renderRows(tab: PluginSettingsTab): void {
+  for (const definition of tab.getSettingDefinitions()) {
+    if ('render' in definition) {
+      definition.render(new SettingEx(tab.containerEl), castTo<SettingGroup>(null));
+    }
+  }
+}
+
 describe('PluginSettingsTab', () => {
   beforeEach(() => {
     app = App.createConfigured__().asOriginalType__();
@@ -75,19 +91,17 @@ describe('PluginSettingsTab', () => {
     expect(createSettingsTab()).toBeInstanceOf(PluginSettingsTab);
   });
 
-  it('should render five settings on display', () => {
+  it('should declare five settings', () => {
     const tab = createSettingsTab();
 
-    tab.displayLegacy();
-
     const EXPECTED_SETTING_COUNT = 5;
-    expect(tab.containerEl.children.length).toBe(EXPECTED_SETTING_COUNT);
+    expect(tab.getSettingDefinitions().length).toBe(EXPECTED_SETTING_COUNT);
   });
 
   it('should bind every setting to its property in order', () => {
     const tab = createSettingsTab();
 
-    tab.displayLegacy();
+    renderRows(tab);
 
     expect(bindSpy.mock.calls.map((bindCall) => bindCall[0].propertyName)).toEqual([
       'attachmentLinksPrefix',
@@ -100,7 +114,7 @@ describe('PluginSettingsTab', () => {
 
   it('should convert newline to a visible enter character when reading from plugin settings', () => {
     const tab = createSettingsTab();
-    tab.displayLegacy();
+    renderRows(tab);
 
     const converter = ensureNonNullable(findBind('attachmentLinksPrefix').options.pluginSettingsToComponentValueConverter);
 
@@ -109,7 +123,7 @@ describe('PluginSettingsTab', () => {
 
   it('should convert space to a visible space character when reading from plugin settings', () => {
     const tab = createSettingsTab();
-    tab.displayLegacy();
+    renderRows(tab);
 
     const converter = ensureNonNullable(findBind('attachmentLinksPrefix').options.pluginSettingsToComponentValueConverter);
 
@@ -118,7 +132,7 @@ describe('PluginSettingsTab', () => {
 
   it('should restore a visible enter character back to a newline when saving to plugin settings', () => {
     const tab = createSettingsTab();
-    tab.displayLegacy();
+    renderRows(tab);
 
     const converter = ensureNonNullable(findBind('attachmentLinksPrefix').options.componentToPluginSettingsValueConverter);
 
@@ -127,7 +141,7 @@ describe('PluginSettingsTab', () => {
 
   it('should restore a visible space character back to a space when saving to plugin settings', () => {
     const tab = createSettingsTab();
-    tab.displayLegacy();
+    renderRows(tab);
 
     const converter = ensureNonNullable(findBind('attachmentLinksPrefix').options.componentToPluginSettingsValueConverter);
 
@@ -136,7 +150,7 @@ describe('PluginSettingsTab', () => {
 
   it('should replace a typed space with a visible space character in the input field', () => {
     const tab = createSettingsTab();
-    tab.displayLegacy();
+    renderRows(tab);
 
     const inputEl = findBind('attachmentLinksPrefix').component.inputEl;
     inputEl.value = ' ';
@@ -147,7 +161,7 @@ describe('PluginSettingsTab', () => {
 
   it('should insert a visible enter character when the user presses Enter', () => {
     const tab = createSettingsTab();
-    tab.displayLegacy();
+    renderRows(tab);
 
     const inputEl = findBind('attachmentLinksPrefix').component.inputEl;
     inputEl.value = 'prefix';
@@ -164,7 +178,7 @@ describe('PluginSettingsTab', () => {
 
   it('should not intercept non-Enter key presses', () => {
     const tab = createSettingsTab();
-    tab.displayLegacy();
+    renderRows(tab);
 
     const inputEl = findBind('attachmentLinksPrefix').component.inputEl;
     inputEl.value = 'prefix';
@@ -179,7 +193,7 @@ describe('PluginSettingsTab', () => {
 
   it('should use 0 as the fallback when selectionStart is null on an input event', () => {
     const tab = createSettingsTab();
-    tab.displayLegacy();
+    renderRows(tab);
 
     const inputEl = findBind('attachmentLinksPrefix').component.inputEl;
     Object.defineProperty(inputEl, 'selectionStart', { configurable: true, value: null });
@@ -192,7 +206,7 @@ describe('PluginSettingsTab', () => {
 
   it('should use 0 as the fallback when selectionStart is null on an Enter keypress', () => {
     const tab = createSettingsTab();
-    tab.displayLegacy();
+    renderRows(tab);
 
     const inputEl = findBind('attachmentLinksPrefix').component.inputEl;
     inputEl.value = 'text';
