@@ -55,9 +55,9 @@ function createHarness(options?: CreateHarnessOptions): Harness {
   const capturedEventCallbacks = new Map<string, () => void>();
 
   const pluginSettingsComponent = strictProxy<PluginSettingsComponent>({
-    on(name: string, callback: () => void, thisArg?: unknown): AsyncEventRef {
+    on(name: string, callback: () => void, thisArgument?: unknown): AsyncEventRef {
       capturedEventCallbacks.set(name, callback);
-      return castTo<AsyncEventRef>({ asyncEventSource: { offref: noop }, callback, name, thisArg });
+      return castTo<AsyncEventRef>({ asyncEventSource: { offref: noop }, callback, name, thisArgument });
     },
     settings: castTo<PluginSettingsComponent['settings']>(settings)
   });

@@ -67,11 +67,11 @@ export class InsertAttachmentsControl {
 
     const links: string[] = [];
 
-    for (const file of Array.from(this.fileEl.files)) {
+    for (const file of this.fileEl.files) {
       const filename = basename(file.name);
       const data = await file.arrayBuffer();
-      const ext = extname(filename);
-      const attachmentFile = await this.app.saveAttachment(basename(filename, ext), ext.slice(1), data);
+      const extension = extname(filename);
+      const attachmentFile = await this.app.saveAttachment(basename(filename, extension), extension.slice(1), data);
       let link = this.app.fileManager.generateMarkdownLink(attachmentFile, activeFile.path);
       if (!link.startsWith('!')) {
         link = `!${link}`;
@@ -79,10 +79,10 @@ export class InsertAttachmentsControl {
       links.push(link);
     }
 
-    const linksStr = this.pluginSettingsComponent.settings.attachmentLinksPrefix
+    const linksString = this.pluginSettingsComponent.settings.attachmentLinksPrefix
       + links.join(this.pluginSettingsComponent.settings.attachmentLinksDelimiter)
       + this.pluginSettingsComponent.settings.attachmentLinksSuffix;
-    this.editor.replaceSelection(linksStr);
+    this.editor.replaceSelection(linksString);
     this.detachFileEl();
   }
 

@@ -78,9 +78,9 @@ describe('InvokeCommandHandler', () => {
     const handler = createHandler(app, pluginSettingsComponent);
 
     const editor = strictProxy<Editor>({});
-    const ctx = strictProxy<MarkdownFileInfo>({});
+    const context = strictProxy<MarkdownFileInfo>({});
     const command = handler.buildCommand();
-    command.editorCheckCallback?.(false, editor, ctx);
+    command.editorCheckCallback?.(false, editor, context);
 
     expect(hoisted.mockInsertAttachmentsControlConstructor).toHaveBeenCalledWith({
       app,
@@ -93,9 +93,9 @@ describe('InvokeCommandHandler', () => {
     const handler = createHandler();
 
     const editor = strictProxy<Editor>({});
-    const ctx = strictProxy<MarkdownFileInfo>({});
+    const context = strictProxy<MarkdownFileInfo>({});
     const command = handler.buildCommand();
-    const result = command.editorCheckCallback?.(true, editor, ctx);
+    const result = command.editorCheckCallback?.(true, editor, context);
 
     expect(result).toBe(true);
     expect(hoisted.mockInsertAttachmentsControlConstructor).not.toHaveBeenCalled();

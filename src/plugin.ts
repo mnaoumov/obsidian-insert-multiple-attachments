@@ -35,7 +35,7 @@ export class Plugin extends PluginBase {
         ribbonIconRegistrar: new PluginRibbonIconRegistrar(this)
       })
     );
-    this.commandHandlerComponent.registerCommandHandlers([
+    this.commandHandlerComponent.registerCommandHandlers(() => [
       new InvokeCommandHandler({
         app: this.app,
         pluginSettingsComponent

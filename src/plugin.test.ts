@@ -2,6 +2,7 @@ import type {
   App as AppOriginal,
   PluginManifest
 } from 'obsidian';
+import type { CommandHandler } from 'obsidian-dev-utils/obsidian/command-handlers/command-handler';
 import type { CommandHandlerComponent } from 'obsidian-dev-utils/obsidian/command-handlers/command-handler-component';
 import type { PluginNoticeComponent } from 'obsidian-dev-utils/obsidian/components/plugin-notice-component';
 
@@ -124,13 +125,18 @@ function instanceOf(mock: ReturnType<typeof vi.fn>): unknown {
 
 // `pluginNoticeComponent` is a getter that throws when its backing field is unset, so seed it too — the
 // Open-demo-vault handler reads it. The base `onload()` would normally set it, but that is dev-utils' concern.
-function seedAndRun(plugin: Plugin): ReturnType<typeof vi.fn> {
+function seedAndRun(plugin: Plugin): CommandHandler[] {
   const internals = castTo<PluginInternals>(plugin);
-  const registerCommandHandlers = vi.fn();
+  const registerCommandHandlers = vi.fn<CommandHandlerComponent['registerCommandHandlers']>();
   internals._commandHandlerComponent = strictProxy<CommandHandlerComponent>({ registerCommandHandlers });
   internals._pluginNoticeComponent = pluginNoticeComponent;
   internals.onloadImpl();
-  return registerCommandHandlers;
+  // Since obsidian-dev-utils 89.0.0 the handlers are built lazily by a factory, so build them here.
+  const commandHandlerFactory = registerCommandHandlers.mock.calls[0]?.[0];
+  if (!commandHandlerFactory) {
+    throw new Error('The plugin did not register its own command handlers.');
+  }
+  return commandHandlerFactory();
 }
 
 describe('Plugin', () => {
@@ -215,10 +221,9 @@ describe('Plugin', () => {
 
     it('should register the invoke and open demo vault command handlers on the base command-handler component', () => {
       const plugin = new Plugin(app, manifest);
-      const registerCommandHandlers = seedAndRun(plugin);
+      const commandHandlers = seedAndRun(plugin);
 
-      expect(registerCommandHandlers).toHaveBeenCalledOnce();
-      expect(registerCommandHandlers).toHaveBeenCalledWith([
+      expect(commandHandlers).toStrictEqual([
         instanceOf(MockInvokeCommandHandler),
         instanceOf(MockOpenDemoVaultCommandHandler)
       ]);
