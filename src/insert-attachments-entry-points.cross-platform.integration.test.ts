@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * Shared integration suite exercising the two GUI entry points added for issue #8 — the ribbon icon
+ * Integration suite exercising the two GUI entry points added for issue #8 — the ribbon icon
  * and the editor right-click menu item — against a live Obsidian instance.
  *
  * The OS-native file picker cannot be automated, but the flow underneath it can: the plugin opens a
@@ -11,11 +11,8 @@
  * and asserts the two attachments were saved and embedded into the note joined by the default
  * delimiter.
  *
- * Registered by the platform entry points (`plugin.desktop.integration.test.ts`,
- * `plugin.android.integration.test.ts`) so the exact same flow runs on both Desktop and Android. The
- * `*.integration.test.ts` name matches the unit project's exclude glob (so it is not collected as a
- * unit test or coverage-instrumented) yet no `*.desktop`/`*.android`/`*.no-app` project glob — it runs
- * only when imported by a platform entry point.
+ * Named `*.cross-platform.integration.test.ts` (per G47), so the desktop AND android projects both
+ * collect it and the same flow is verified on each.
  */
 
 import type { MenuItem } from 'obsidian';
@@ -42,30 +39,22 @@ interface ScenarioResult {
   readonly itemFound: boolean;
   readonly triggered: boolean;
 }
+describe('Insert multiple attachments entry points', () => {
+  it('inserts the picked attachments when the ribbon icon is clicked', async () => {
+    const result = await runInsertScenario('ribbon');
 
-/**
- * Registers the ribbon-icon and editor-context-menu insertion integration tests for the given platform.
- *
- * @param platform - Human-readable platform label used in the test name (e.g. `'Desktop'`).
- */
-export function registerInsertAttachmentsEntryPointsSuite(platform: string): void {
-  describe(`Insert multiple attachments entry points (${platform})`, () => {
-    it('inserts the picked attachments when the ribbon icon is clicked', async () => {
-      const result = await runInsertScenario('ribbon');
+    expect(result.triggered).toBe(true);
+    assertAttachmentsInserted(result);
+  }, TEST_TIMEOUT_IN_MILLISECONDS);
 
-      expect(result.triggered).toBe(true);
-      assertAttachmentsInserted(result);
-    }, TEST_TIMEOUT_IN_MILLISECONDS);
+  it('inserts the picked attachments when the editor context-menu item is invoked', async () => {
+    const result = await runInsertScenario('contextMenu');
 
-    it('inserts the picked attachments when the editor context-menu item is invoked', async () => {
-      const result = await runInsertScenario('contextMenu');
-
-      expect(result.triggered).toBe(true);
-      expect(result.itemFound).toBe(true);
-      assertAttachmentsInserted(result);
-    }, TEST_TIMEOUT_IN_MILLISECONDS);
-  });
-}
+    expect(result.triggered).toBe(true);
+    expect(result.itemFound).toBe(true);
+    assertAttachmentsInserted(result);
+  }, TEST_TIMEOUT_IN_MILLISECONDS);
+});
 
 function assertAttachmentsInserted(result: ScenarioResult): void {
   expect(result.attachmentAExists).toBe(true);
