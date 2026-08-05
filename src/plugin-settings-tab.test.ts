@@ -165,8 +165,10 @@ describe('PluginSettingsTab', () => {
 
     const inputEl = findBind('attachmentLinksPrefix').component.inputEl;
     inputEl.value = 'prefix';
-    Object.defineProperty(inputEl, 'selectionStart', { configurable: true, value: 6 });
-    Object.defineProperty(inputEl, 'selectionEnd', { configurable: true, value: 6 });
+    Object.defineProperties(inputEl, {
+      selectionEnd: { configurable: true, value: 6 },
+      selectionStart: { configurable: true, value: 6 }
+    });
 
     const keypressEvent = new KeyboardEvent('keypress', { key: 'Enter' });
     const preventDefaultSpy = vi.spyOn(keypressEvent, 'preventDefault');
@@ -196,8 +198,10 @@ describe('PluginSettingsTab', () => {
     renderRows(tab);
 
     const inputEl = findBind('attachmentLinksPrefix').component.inputEl;
-    Object.defineProperty(inputEl, 'selectionStart', { configurable: true, value: null });
-    Object.defineProperty(inputEl, 'selectionEnd', { configurable: true, value: null });
+    Object.defineProperties(inputEl, {
+      selectionEnd: { configurable: true, value: null },
+      selectionStart: { configurable: true, value: null }
+    });
     inputEl.value = ' ';
     inputEl.dispatchEvent(new Event('input'));
 
@@ -210,8 +214,10 @@ describe('PluginSettingsTab', () => {
 
     const inputEl = findBind('attachmentLinksPrefix').component.inputEl;
     inputEl.value = 'text';
-    Object.defineProperty(inputEl, 'selectionStart', { configurable: true, value: null });
-    Object.defineProperty(inputEl, 'selectionEnd', { configurable: true, value: null });
+    Object.defineProperties(inputEl, {
+      selectionEnd: { configurable: true, value: null },
+      selectionStart: { configurable: true, value: null }
+    });
 
     inputEl.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter' }));
 

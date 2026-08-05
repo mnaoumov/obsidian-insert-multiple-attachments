@@ -23,7 +23,7 @@ import { InsertAttachmentsControl } from './insert-attachments-control.ts';
 // Can capture and await the real `handleChange`. `basename`/`extname` are left as the real path utilities.
 vi.mock('obsidian-dev-utils/async', async (importOriginal) => ({
   ...await importOriginal<typeof import('obsidian-dev-utils/async')>(),
-  convertAsyncToSync: vi.fn((fn: (...args: unknown[]) => unknown) => fn)
+  convertAsyncToSync: vi.fn(($function: (...$arguments: unknown[]) => unknown) => $function)
 }));
 
 interface CreateControlParams {
@@ -129,24 +129,26 @@ describe('InsertAttachmentsControl', () => {
 
     vi.spyOn(activeDocument.body, 'createEl').mockReturnValue(castTo<HTMLInputElement>(mockFileEl));
 
-    Object.defineProperty(activeDocument, 'addEventListener', {
-      configurable: true,
-      value: mockDocumentAddEventListener
+    Object.defineProperties(activeDocument, {
+      addEventListener: {
+        configurable: true,
+        value: mockDocumentAddEventListener
+      },
+      removeEventListener: {
+        configurable: true,
+        value: mockDocumentRemoveEventListener
+      }
     });
 
-    Object.defineProperty(activeDocument, 'removeEventListener', {
-      configurable: true,
-      value: mockDocumentRemoveEventListener
-    });
-
-    Object.defineProperty(window, 'setTimeout', {
-      configurable: true,
-      value: mockSetTimeout
-    });
-
-    Object.defineProperty(window, 'clearTimeout', {
-      configurable: true,
-      value: mockClearTimeout
+    Object.defineProperties(window, {
+      clearTimeout: {
+        configurable: true,
+        value: mockClearTimeout
+      },
+      setTimeout: {
+        configurable: true,
+        value: mockSetTimeout
+      }
     });
   });
 

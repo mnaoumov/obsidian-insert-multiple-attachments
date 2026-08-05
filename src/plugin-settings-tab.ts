@@ -99,12 +99,12 @@ function handleWhitespace(text: TextComponent): void {
     text.inputEl.setSelectionRange(start, end);
   });
 
-  text.inputEl.addEventListener('keypress', (evt) => {
-    if (evt.key !== 'Enter') {
+  text.inputEl.addEventListener('keypress', ($event) => {
+    if ($event.key !== 'Enter') {
       return;
     }
 
-    evt.preventDefault();
+    $event.preventDefault();
     const start = text.inputEl.selectionStart ?? 0;
     const end = text.inputEl.selectionEnd ?? 0;
     const value = text.inputEl.value;
@@ -113,15 +113,15 @@ function handleWhitespace(text: TextComponent): void {
   });
 }
 
-function restoreWhitespaceCharacters(str: string): string {
-  return replace(str, {
+function restoreWhitespaceCharacters($string: string): string {
+  return replace($string, {
     [VISIBLE_ENTER_CHARACTER]: '\n',
     [VISIBLE_SPACE_CHARACTER]: ' '
   });
 }
 
-function showWhitespaceCharacters(str: string): string {
-  return replace(str, {
+function showWhitespaceCharacters($string: string): string {
+  return replace($string, {
     '\n': VISIBLE_ENTER_CHARACTER,
     ' ': VISIBLE_SPACE_CHARACTER
   });

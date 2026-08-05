@@ -80,12 +80,14 @@ function assertAttachmentsInserted(result: ScenarioResult): void {
 
 async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promise<ScenarioResult> {
   return evalInObsidian({
+    // eslint-disable-next-line unicorn/name-replacements -- `args` is an `obsidian-integration-testing` parameter name.
     args: {
       menuItemTitle: MENU_ITEM_TITLE,
       mode: scenarioMode,
       ribbonTitle: RIBBON_TITLE,
       timeoutInMilliseconds: WAIT_TIMEOUT_IN_MILLISECONDS
     },
+    // eslint-disable-next-line unicorn/name-replacements -- `fn` is an `obsidian-integration-testing` parameter name.
     async fn({
       app,
       lib: { waitUntil },
@@ -121,8 +123,8 @@ async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promis
       const view = app.workspace.getActiveViewOfType(obsidianModule.MarkdownView);
       const editor = view?.editor;
 
-      let triggered = false;
-      let itemFound = false;
+      let isTriggered = false;
+      let isItemFound = false;
       let content = '';
 
       // The plugin opens the OS file picker by clicking a hidden <input type="file"> in its
@@ -136,26 +138,26 @@ async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promis
           if (mode === 'ribbon') {
             await waitUntil({
               message: 'ribbon icon was not rendered',
-              predicate: () => document.querySelector(`[aria-label="${ribbonTitle}"]`) !== null,
+              predicate: () => document.querySelector(`[aria-label="${CSS.escape(ribbonTitle)}"]`) !== null,
               timeoutInMilliseconds
             });
-            const ribbonEl = document.querySelector<HTMLElement>(`[aria-label="${ribbonTitle}"]`);
+            const ribbonEl = document.querySelector<HTMLElement>(`[aria-label="${CSS.escape(ribbonTitle)}"]`);
             if (ribbonEl) {
-              triggered = true;
+              isTriggered = true;
               ribbonEl.click();
             }
           } else {
             const menu = new obsidianModule.Menu();
             app.workspace.trigger('editor-menu', menu, editor, view);
             const menuItem = menu.items.find((item): item is MenuItem => 'titleEl' in item && item.titleEl.textContent === menuItemTitle);
-            itemFound = menuItem !== undefined;
+            isItemFound = menuItem !== undefined;
             if (menuItem) {
-              triggered = true;
+              isTriggered = true;
               menuItem.callback?.();
             }
           }
 
-          if (triggered) {
+          if (isTriggered) {
             await waitUntil({
               message: 'file input was not created',
               predicate: () => document.querySelector('input.insert-multiple-attachments') !== null,
@@ -191,11 +193,13 @@ async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promis
       const attachmentBPath = paths.find((path) => path.endsWith(fileNameB)) ?? null;
 
       for (const path of [notePath, attachmentAPath, attachmentBPath]) {
-        if (path) {
-          const file = app.vault.getAbstractFileByPath(path);
-          if (file) {
-            await app.fileManager.trashFile(file);
-          }
+        if (!path) {
+          continue;
+        }
+
+        const file = app.vault.getAbstractFileByPath(path);
+        if (file) {
+          await app.fileManager.trashFile(file);
         }
       }
 
@@ -205,8 +209,8 @@ async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promis
         content,
         fileNameA,
         fileNameB,
-        itemFound,
-        triggered
+        itemFound: isItemFound,
+        triggered: isTriggered
       };
     },
     vaultPath: getTempVault().path
