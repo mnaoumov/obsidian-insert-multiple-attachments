@@ -11,7 +11,7 @@ import { PluginSettingsTab } from './plugin-settings-tab.ts';
 import { RibbonIconComponent } from './ribbon-icon-component.ts';
 
 export class Plugin extends PluginBase {
-  protected override onloadImpl(): void {
+  protected override async onloadImpl(): Promise<void> {
     const pluginSettingsComponent = this.addChild(
       new PluginSettingsComponent({
         dataHandler: new PluginDataHandler(this),
@@ -35,7 +35,7 @@ export class Plugin extends PluginBase {
         ribbonIconRegistrar: new PluginRibbonIconRegistrar(this)
       })
     );
-    this.commandHandlerComponent.registerCommandHandlers(() => [
+    await this.commandHandlerComponent.registerCommandHandlers(() => [
       new InvokeCommandHandler({
         app: this.app,
         pluginSettingsComponent
