@@ -18,7 +18,7 @@
 import type { MenuItem } from 'obsidian';
 
 import { evalInObsidian } from 'obsidian-integration-testing';
-import { getTempVault } from 'obsidian-integration-testing/vitest-global-setup-plugin';
+import { getTemporaryVault } from 'obsidian-integration-testing/vitest-global-setup-plugin';
 import {
   describe,
   expect,
@@ -69,15 +69,7 @@ function assertAttachmentsInserted(result: ScenarioResult): void {
 
 async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promise<ScenarioResult> {
   return evalInObsidian({
-    // eslint-disable-next-line unicorn/name-replacements -- `args` is an `obsidian-integration-testing` parameter name.
-    args: {
-      menuItemTitle: MENU_ITEM_TITLE,
-      mode: scenarioMode,
-      ribbonTitle: RIBBON_TITLE,
-      timeoutInMilliseconds: WAIT_TIMEOUT_IN_MILLISECONDS
-    },
-    // eslint-disable-next-line unicorn/name-replacements -- `fn` is an `obsidian-integration-testing` parameter name.
-    async fn({
+    async callback({
       app,
       lib: { waitUntil },
       menuItemTitle,
@@ -202,6 +194,12 @@ async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promis
         triggered: isTriggered
       };
     },
-    vaultPath: getTempVault().path
+    input: {
+      menuItemTitle: MENU_ITEM_TITLE,
+      mode: scenarioMode,
+      ribbonTitle: RIBBON_TITLE,
+      timeoutInMilliseconds: WAIT_TIMEOUT_IN_MILLISECONDS
+    },
+    vaultPath: getTemporaryVault().path
   });
 }
