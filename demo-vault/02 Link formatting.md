@@ -1,5 +1,3 @@
-[Docs](https://github.com/mnaoumov/obsidian-insert-multiple-attachments/)
-
 # Link formatting
 
 When the plugin inserts several attachments, it wraps the whole block and joins the individual embeds using three configurable pieces of text:
@@ -28,6 +26,6 @@ Out of the box the prefix and suffix are **empty** and the delimiter is a **blan
 
 1. Open **Settings -> Community plugins -> Insert Multiple Attachments**.
 2. Edit **Attachment links prefix**, **Attachment links delimiter**, and/or **Attachment links suffix**. Spaces show as `␣` and newlines as `↵` so whitespace-only values stay visible; press `Enter` inside a field to add a newline.
-3. Re-run the command in [[Playground]] and watch how the embeds are joined.
+3. Re-run the command in [Playground](<./Playground.md>) and watch how the embeds are joined.
 
-For example, set the delimiter to a single space to place attachments side by side, or add a `-` prefix followed by a space, with a newline delimiter, to build a bullet list. Each field maps to a setting key documented in [[03 Settings]].
+For example, set the delimiter to a single space to place attachments side by side, or add a `-` prefix followed by a space, with a newline delimiter, to build a bullet list. Each field maps to a setting key documented in [03 Settings](<./03 Settings.md>).
