@@ -1,3 +1,5 @@
+# Insert Multiple Attachments demo vault
+
 This is an [Obsidian](https://obsidian.md/) vault demonstrating features of the [Insert Multiple Attachments](https://github.com/mnaoumov/obsidian-insert-multiple-attachments) plugin.
 
 ## Opening this vault
