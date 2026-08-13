@@ -108,12 +108,12 @@ const manifest: PluginManifest = {
 };
 
 // ODU 86.0.0 moved the command-handler component into `PluginBase` (`this.commandHandlerComponent`). Driving
-// `onloadImpl()` directly with a seeded `_commandHandlerComponent` keeps this a focused wiring test — the base
+// `onloadImpl()` directly with a seeded command-handler component keeps this a focused wiring test — the base
 // `onload()` (notice/context/debug components) is dev-utils' own concern, covered by its tests.
 interface PluginInternals {
-  _commandHandlerComponent: CommandHandlerComponent;
-  _pluginNoticeComponent: PluginNoticeComponent;
+  commandHandlerComponent: CommandHandlerComponent;
   onloadImpl(): void;
+  pluginNoticeComponent: PluginNoticeComponent;
 }
 
 let app: AppOriginal;
@@ -123,13 +123,15 @@ function instanceOf(mock: ReturnType<typeof vi.fn>): unknown {
   return mock.mock.results[0]?.value;
 }
 
-// `pluginNoticeComponent` is a getter that throws when its backing field is unset, so seed it too — the
+// `pluginNoticeComponent` is a getter that throws when nothing has been stored, so seed it too — the
 // Open-demo-vault handler reads it. The base `onload()` would normally set it, but that is dev-utils' concern.
+// Seed THROUGH the accessors: since obsidian-dev-utils 93.2 the components live in a bag behind them, so
+// Writing the old `_`-prefixed backing field no longer feeds the getter.
 function seedAndRun(plugin: Plugin): CommandHandler[] {
   const internals = castTo<PluginInternals>(plugin);
   const registerCommandHandlers = vi.fn<CommandHandlerComponent['registerCommandHandlers']>();
-  internals._commandHandlerComponent = strictProxy<CommandHandlerComponent>({ registerCommandHandlers });
-  internals._pluginNoticeComponent = pluginNoticeComponent;
+  internals.commandHandlerComponent = strictProxy<CommandHandlerComponent>({ registerCommandHandlers });
+  internals.pluginNoticeComponent = pluginNoticeComponent;
   internals.onloadImpl();
   // Since obsidian-dev-utils 89.0.0 the handlers are built lazily by a factory, so build them here.
   const commandHandlerFactory = registerCommandHandlers.mock.calls[0]?.[0];
