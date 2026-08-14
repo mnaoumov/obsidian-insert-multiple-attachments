@@ -5,33 +5,40 @@
 [![GitHub downloads](https://img.shields.io/github/downloads/mnaoumov/obsidian-insert-multiple-attachments/total)](https://github.com/mnaoumov/obsidian-insert-multiple-attachments/releases)
 [![Coverage: 100%](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/mnaoumov/obsidian-insert-multiple-attachments)
 
-This is a plugin for [Obsidian](https://obsidian.md/) that allows to insert multiple attachments at a time.
+[Obsidian](https://obsidian.md/)'s built-in **Insert attachment** command opens a file picker that
+accepts exactly one file. Attaching six screenshots to a note therefore means running it six times,
+each with its own dialog.
 
-It just modifies the built-in `Insert Attachment` command to add support for multiple files.
-
-## Usage
-
-You can insert multiple attachments into the active note in any of the following ways:
-
-1. Running the **Insert Multiple Attachments: Invoke** command from the command palette.
-2. Clicking the ribbon icon (the paperclip in the left sidebar).
-3. Selecting **Insert multiple attachments** from the editor right-click menu.
-
-Each file you pick is saved as an attachment and embedded at the cursor.
-
-## Settings
-
-- **Attachment links prefix / delimiter / suffix** — control the text inserted before, between, and after the generated attachment links.
-- **Show ribbon icon** — toggle the ribbon icon on or off (on by default).
-- **Show in editor context menu** — toggle the editor right-click menu item on or off (on by default).
+This plugin adds a command that opens a **multi-select** picker instead: choose as many files as you
+like, and every one is saved as an attachment and embedded at the cursor in a single run.
 
 ## Demo vault
 
-A demo vault with usage examples ships with every release. You can access it via any of the following:
+**The documentation is a demo vault.** Every feature has a note that explains what it does and why you
+would want it, with sample files ready to insert.
+
+**[Start reading here](<./demo-vault/00 Start.md>)** — it is plain markdown, so it works on GitHub with
+nothing installed.
+
+A copy of the vault ships with every release. You can access it via any of the following:
 
 1. Running the **Insert Multiple Attachments: Open demo vault** command.
 2. Downloading `insert-multiple-attachments-demo-vault-<version>.zip` (`<version>` is the release version) from the [Releases](https://github.com/mnaoumov/obsidian-insert-multiple-attachments/releases).
 3. Browsing its source in [`demo-vault/`](./demo-vault/README.md) in this repository.
+
+## What it does
+
+- **Insert many attachments at once**, from the Command Palette, the ribbon paperclip, or the editor
+  right-click menu — the last two switchable off if you do not want them.
+  [01 Insert multiple attachments](<./demo-vault/01 Insert multiple attachments.md>)
+- **Control the text around the links** — a prefix, a delimiter between them, and a suffix — so six
+  embeds can come out as a list, a gallery row, or whatever your note needs.
+  [02 Link formatting](<./demo-vault/02 Link formatting.md>)
+- **Every setting**, by the key it is stored under.
+  [03 Settings](<./demo-vault/03 Settings.md>)
+
+Each file lands in your vault's own attachment folder, exactly as Obsidian's single-file command would
+put it there.
 
 ## Installation
 
@@ -56,6 +63,14 @@ window.DEBUG.enable('insert-multiple-attachments');
 ```
 
 For more details, refer to the [documentation](https://mnaoumov.dev/obsidian-dev-utils/guides/debugging/).
+
+## Changelog
+
+All notable changes to this project will be documented in the [CHANGELOG](./CHANGELOG.md).
+
+## Contributing
+
+Contributions are welcome — see [CONTRIBUTING](./CONTRIBUTING.md) to get set up.
 
 ## Support
 

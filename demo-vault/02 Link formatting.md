@@ -2,9 +2,12 @@
 
 When the plugin inserts several attachments, it wraps the whole block and joins the individual embeds using three configurable pieces of text:
 
-- **Prefix** - inserted once, before the first embed.
-- **Delimiter** - inserted between each pair of embeds.
-- **Suffix** - inserted once, after the last embed.
+- **Prefix**
+  - inserted once, before the first embed.
+- **Delimiter**
+  - inserted between each pair of embeds.
+- **Suffix**
+  - inserted once, after the last embed.
 
 So for two attachments the inserted text is:
 

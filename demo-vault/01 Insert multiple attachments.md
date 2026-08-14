@@ -9,6 +9,18 @@ Obsidian's built-in **Insert attachment** command opens a file picker that only 
 3. In the OS picker, select **two or more** files - hold `Ctrl`/`Cmd` (or `Shift`) to multi-select. For a quick test, pick `sample-one.txt` and `sample-two.txt` from this vault's `_assets/sample-attachments/` folder, or select a couple of your own images.
 4. Confirm. Each selected file is copied into the vault's attachment folder (`_assets/attachments/`) and inserted at the cursor as its own embed.
 
+## Three ways to run it
+
+The Command Palette is one of three, and the other two can be turned off if you do not want them — see
+[03 Settings](<./03 Settings.md>).
+
+- **Insert Multiple Attachments: Invoke**
+  - from the Command Palette, and bindable to a hotkey like any other command.
+- The **ribbon icon**
+  - the paperclip in the left sidebar (`shouldShowRibbonIcon`, on by default).
+- The **editor right-click menu**
+  - **Insert multiple attachments** (`shouldShowInEditorContextMenu`, on by default).
+
 ## What happens
 
 - Every chosen file is saved as an attachment, exactly as Obsidian's single-file command would do - just for **all** of them in one go.
