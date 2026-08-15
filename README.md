@@ -14,12 +14,14 @@ like, and every one is saved as an attachment and embedded at the cursor in a si
 
 <!-- markdownlint-disable MD033 -->
 
-<a href="images/screenshots/screenshot-desktop-1.png"><img src="images/screenshots/screenshot-desktop-1.png" alt="Pick ${String(PICKED_FILE_NAMES.length)} files, get ${String(PICKED_FILE_NAMES.length)} attachments in one run" width="600"></a>
+<a href="images/screenshots/screenshot-desktop-1.png"><img src="images/screenshots/screenshot-desktop-1.png" alt="Pick 4 files, get 4 attachments in one run" width="600"></a>
 
 <details>
 <summary>More screenshots</summary>
 
 <a href="images/screenshots/screenshot-desktop-2.png"><img src="images/screenshots/screenshot-desktop-2.png" alt="Or reach it from the editor right-click menu" width="600"></a>
+<a href="images/screenshots/screenshot-mobile-1.png"><img src="images/screenshots/screenshot-mobile-1.png" alt="Pick 4 files, get 4 attachments in one run" width="270"></a>
+<a href="images/screenshots/screenshot-mobile-2.png"><img src="images/screenshots/screenshot-mobile-2.png" alt="One command, and the phone picker takes it from there" width="270"></a>
 
 </details>
 
