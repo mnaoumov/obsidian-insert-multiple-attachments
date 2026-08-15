@@ -12,6 +12,19 @@ each with its own dialog.
 This plugin adds a command that opens a **multi-select** picker instead: choose as many files as you
 like, and every one is saved as an attachment and embedded at the cursor in a single run.
 
+<!-- markdownlint-disable MD033 -->
+
+<a href="images/screenshots/screenshot-desktop-1.png"><img src="images/screenshots/screenshot-desktop-1.png" alt="Pick ${String(PICKED_FILE_NAMES.length)} files, get ${String(PICKED_FILE_NAMES.length)} attachments in one run" width="600"></a>
+
+<details>
+<summary>More screenshots</summary>
+
+<a href="images/screenshots/screenshot-desktop-2.png"><img src="images/screenshots/screenshot-desktop-2.png" alt="Or reach it from the editor right-click menu" width="600"></a>
+
+</details>
+
+<!-- markdownlint-enable MD033 -->
+
 ## Demo vault
 
 **The documentation is a demo vault.** Every feature has a note that explains what it does and why you
