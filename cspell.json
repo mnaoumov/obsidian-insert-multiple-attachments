@@ -14,7 +14,9 @@
     "mnaoumov",
     "Naumov",
     "offref",
-    "tsbuildinfo"
+    "tsbuildinfo",
+    "unvalidated",
+    "wdio"
   ],
   "ignoreWords": [],
   "import": [],
