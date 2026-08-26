@@ -11,8 +11,7 @@ Obsidian's built-in **Insert attachment** command opens a file picker that only 
 
 ## Three ways to run it
 
-The Command Palette is one of three, and the other two can be turned off if you do not want them — see
-[03 Settings](<./03 Settings.md>).
+The Command Palette is one of three, and the other two can be turned off if you do not want them — see [03 Settings](<./03 Settings.md>).
 
 - **Insert Multiple Attachments: Invoke**
   - from the Command Palette, and bindable to a hotkey like any other command.
