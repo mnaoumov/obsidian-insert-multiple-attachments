@@ -115,7 +115,7 @@ describe('desktop store screenshots', () => {
  */
 async function openEditorContextMenu(): Promise<string> {
   return await evalInObsidian({
-    async callback({ lib: { waitUntil } }) {
+    async callback({ lib: { clickMouse, waitUntil } }) {
       const MENU_TIMEOUT_IN_MILLISECONDS = 15_000;
       const SETTLE_DELAY_IN_MILLISECONDS = 900;
       const RESIZE_SETTLE_DELAY_IN_MILLISECONDS = 2000;
@@ -130,15 +130,16 @@ async function openEditorContextMenu(): Promise<string> {
         throw new TypeError('The editor is not on screen.');
       }
 
+      // A TRUSTED right-click in the editor. This is the surface where `isTrusted` actually bites:
+      // Obsidian 1.13's markdown viewport listener is `(e) => { if (!e.defaultPrevented && e.isTrusted
+      // && ...) }`, so a dispatched `contextmenu` can be dropped on the floor by the very code that
+      // Builds the menu this shot photographs.
       const rect = content.getBoundingClientRect();
-      content.dispatchEvent(
-        new MouseEvent('contextmenu', {
-          bubbles: true,
-          cancelable: true,
-          clientX: Math.round(rect.left + rect.width / HALF),
-          clientY: Math.round(rect.top + rect.height / HALF)
-        })
-      );
+      clickMouse({
+        button: 'right',
+        x: rect.left + rect.width / HALF,
+        y: rect.top + rect.height / HALF
+      });
 
       await waitUntil({
         message: 'the editor context menu to open',
