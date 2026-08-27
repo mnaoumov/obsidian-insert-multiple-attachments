@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.4.5
+
+- test(insert-multiple-attachments): open the editor menu with a trusted right-click
+
 ## 1.4.4
 
 - docs(demo-vault): unwrap the notes so Obsidian stops rendering a break per line
