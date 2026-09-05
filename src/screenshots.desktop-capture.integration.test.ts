@@ -135,7 +135,7 @@ async function openEditorContextMenu(): Promise<string> {
       // && ...) }`, so a dispatched `contextmenu` can be dropped on the floor by the very code that
       // Builds the menu this shot photographs.
       const rect = content.getBoundingClientRect();
-      clickMouse({
+      await clickMouse({
         button: 'right',
         x: rect.left + rect.width / HALF,
         y: rect.top + rect.height / HALF
