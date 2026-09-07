@@ -32,7 +32,7 @@ This plugin adds a command that opens a **multi-select** picker instead: choose 
 A copy of the vault ships with every release. You can access it via any of the following:
 
 1. Running the **Insert Multiple Attachments: Open demo vault** command.
-2. Downloading `insert-multiple-attachments-demo-vault-<version>.zip` (`<version>` is the release version) from the [Releases](https://github.com/mnaoumov/obsidian-insert-multiple-attachments/releases).
+2. Downloading `insert-multiple-attachments-demo-vault.zip` from the [Releases](https://github.com/mnaoumov/obsidian-insert-multiple-attachments/releases). It unzips into a single `insert-multiple-attachments-demo-vault-<version>` folder.
 3. Browsing its source in [`demo-vault/`](./demo-vault/README.md) in this repository.
 
 ## What it does
