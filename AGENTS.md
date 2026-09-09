@@ -23,6 +23,7 @@ Insert Multiple Attachments is an Obsidian plugin that allows inserting multiple
 | Unit tests        | `npm test`                 |
 | Coverage          | `npm run test:coverage`    |
 | Integration tests | `npm run test:integration` |
+| Branch gate       | `npm run gate`             |
 | Commit (wizard)   | `npm run commit`           |
 
 ## Architecture
