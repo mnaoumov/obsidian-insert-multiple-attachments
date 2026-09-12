@@ -33,10 +33,14 @@ import {
 import { join } from 'node:path';
 import process from 'node:process';
 import {
+  captureDeviceScreenshot,
   captureObsidianScreenshot,
   evalInObsidian,
   labelScreenshot,
-  readPngDimensions
+  raiseSoftKeyboard,
+  readPngDimensions,
+  resolveEmulatorDeviceId,
+  withSoftKeyboardEnabled
 } from 'obsidian-integration-testing';
 import { getTemporaryVault } from 'obsidian-integration-testing/vitest-global-setup-plugin';
 import {
@@ -82,7 +86,25 @@ const PICKED_FILE_NAMES = ['bar chart.svg', 'flow diagram.svg', 'wireframe.svg',
 
 const IMAGES_DIRECTORY = join(process.cwd(), 'images', 'screenshots');
 
+/**
+ * The command palette's own field, read off {@link openCommandPalette} rather than assumed: the palette
+ * is `.prompt input`, which is not the `.prompt-input` a suggester renders.
+ */
+const INPUT_SELECTOR = '.prompt input';
+
+/**
+ * The AVD the frames are taken on, matched by name.
+ *
+ * Never the first device `adb devices` lists: a physical phone is routinely plugged into the same
+ * machine, and the shared AVD the cross-platform suites drive is a different size.
+ */
+const AVD_NAME = 'obsidian_screenshots';
+
+let deviceId = '';
+
 beforeAll(async () => {
+  deviceId = await resolveEmulatorDeviceId({ avdName: AVD_NAME });
+
   const vault = getTemporaryVault();
 
   vault.populate({ [SUBJECT_NOTE_PATH]: '# Design review\n\nAttachments from today:\n\n' });
@@ -138,7 +160,7 @@ describe('mobile store screenshots', () => {
     // Name and the command name as two elements, so `textContent` runs them
     // Together without the separator the reader sees between them.
     expect(suggestions.some((suggestion) => suggestion.includes('Insert Multiple Attachments'))).toBe(true);
-    await shoot(2, 'One command, and the phone picker takes it from there');
+    await shootWithSoftKeyboard(2, 'One command, and the phone picker takes it from there');
   });
 });
 
@@ -329,8 +351,12 @@ async function pickAttachments(): Promise<number> {
 }
 
 /**
- * Captures the window, captions it, and writes it as
+ * Captures the PAGE, captions it, and writes it as
  * `images/screenshots/screenshot-mobile-<index>.png`.
+ *
+ * The page capture is byte-reproducible — no status bar, no clock — which is why the shot that shows the
+ * saved attachments keeps it. Only a shot that has to show the keyboard gives that up; see
+ * {@link shootWithSoftKeyboard}.
  *
  * @param index - The 1-based listing position.
  * @param caption - The caption drawn across the bottom of the frame.
@@ -338,6 +364,57 @@ async function pickAttachments(): Promise<number> {
 async function shoot(index: number, caption: string): Promise<void> {
   const captured = await captureObsidianScreenshot({ vaultPath: vaultPath() });
 
+  await writeFrame(index, caption, captured);
+}
+
+/**
+ * Raises the soft keyboard, captures the DEVICE, and writes the frame.
+ *
+ * For a shot whose subject is a focused field. `captureObsidianScreenshot` cannot show a keyboard: it
+ * drives Appium in the WebView context, so it photographs the page, and the IME is a system window that
+ * is not part of the page — which left the palette shot as a field over an empty band covering three
+ * quarters of the frame.
+ *
+ * Two things are needed and both belong to the harness rather than here: the AVD is built with a hardware
+ * keyboard attached, so Android suppresses the on-screen one until `withSoftKeyboardEnabled` lifts that
+ * and puts the setting back exactly; and a WebView will not ask for an IME on programmatic focus alone,
+ * so `raiseSoftKeyboard` lands a real touch on the field and proves geometrically that it lifted.
+ *
+ * The trade, which applies to this shot alone: a device capture is **not** byte-reproducible, because the
+ * status-bar clock and the battery indicator are in it.
+ *
+ * @param index - The 1-based listing position.
+ * @param caption - The caption drawn across the bottom of the frame.
+ */
+async function shootWithSoftKeyboard(index: number, caption: string): Promise<void> {
+  const captured = await withSoftKeyboardEnabled({
+    async callback() {
+      await raiseSoftKeyboard({
+        deviceId,
+        inputSelector: INPUT_SELECTOR,
+        vaultPath: vaultPath()
+      });
+
+      return await captureDeviceScreenshot({ deviceId });
+    },
+    deviceId
+  });
+
+  await writeFrame(index, caption, captured);
+}
+
+function vaultPath(): string {
+  return getTemporaryVault().path;
+}
+
+/**
+ * Asserts the frame is the store size, captions it, and writes it out.
+ *
+ * @param index - The 1-based listing position.
+ * @param caption - The caption drawn across the bottom of the frame.
+ * @param captured - The raw PNG, from either capture route.
+ */
+async function writeFrame(index: number, caption: string, captured: Uint8Array): Promise<void> {
   // The AVD is 900x1600, so the device frame IS the store size. Asserting it
   // Here is what keeps that true: run this against any other AVD and it fails
   // Loudly instead of quietly shipping an off-spec image.
@@ -350,8 +427,4 @@ async function shoot(index: number, caption: string): Promise<void> {
 
   mkdirSync(IMAGES_DIRECTORY, { recursive: true });
   writeFileSync(join(IMAGES_DIRECTORY, `screenshot-mobile-${String(index)}.png`), labeled);
-}
-
-function vaultPath(): string {
-  return getTemporaryVault().path;
 }
