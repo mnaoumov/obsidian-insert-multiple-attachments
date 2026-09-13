@@ -1,8 +1,8 @@
 /**
  * @file
  *
- * Produces the desktop screenshots the community-store listing needs
- * (T461-P21), driving a staged note in a real Obsidian and writing
+ * Produces the desktop screenshots the community-store listing needs,
+ * driving a staged note in a real Obsidian and writing
  * `images/screenshots/screenshot-desktop-N.png`.
  *
  * The obstacle here is that the plugin's picker is an OS dialog: it builds a
