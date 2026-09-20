@@ -56,7 +56,7 @@ import {
  * declare. Setting `baseFontSize` alone changes nothing on screen.
  */
 interface FontSizeApp {
-  updateFontSize(this: void): void;
+  updateFontSize: (this: void) => void;
 }
 
 /**
@@ -64,7 +64,7 @@ interface FontSizeApp {
  * declare. Setting the config alone changes nothing on screen.
  */
 interface InlineTitleApp {
-  updateInlineTitleDisplay(this: void): void;
+  updateInlineTitleDisplay: (this: void) => void;
 }
 
 const PLUGIN_ID = 'insert-multiple-attachments';

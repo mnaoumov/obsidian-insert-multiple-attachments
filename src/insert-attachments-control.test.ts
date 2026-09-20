@@ -41,7 +41,7 @@ interface MockAppOverrides {
 }
 
 interface MockFile {
-  arrayBuffer(): Promise<ArrayBuffer>;
+  arrayBuffer: () => Promise<ArrayBuffer>;
   readonly name: string;
 }
 
@@ -51,11 +51,11 @@ interface MockFileInput {
   detach: ReturnType<typeof vi.fn>;
   files: MockFileList | null;
   focus: ReturnType<typeof vi.fn>;
-  triggerChange(): Promise<void>;
+  triggerChange: () => Promise<void>;
 }
 
 interface MockFileList {
-  [Symbol.iterator](): Iterator<MockFile>;
+  [Symbol.iterator]: () => Iterator<MockFile>;
 }
 
 let mockFileEl: MockFileInput;

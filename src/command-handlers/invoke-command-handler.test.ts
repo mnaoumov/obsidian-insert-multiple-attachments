@@ -19,7 +19,7 @@ import type { PluginSettingsComponent } from '../plugin-settings-component.ts';
 import { InvokeCommandHandler } from './invoke-command-handler.ts';
 
 interface EditorMenuGate {
-  shouldAddToEditorMenu(): boolean;
+  shouldAddToEditorMenu: () => boolean;
 }
 
 function createHandlerWithContextMenuSetting(shouldShowInEditorContextMenu: boolean): InvokeCommandHandler {

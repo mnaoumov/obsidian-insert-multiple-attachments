@@ -112,7 +112,7 @@ const manifest: PluginManifest = {
 // `onload()` (notice/context/debug components) is dev-utils' own concern, covered by its tests.
 interface PluginInternals {
   commandHandlerComponent: CommandHandlerComponent;
-  onloadImpl(): void;
+  onloadImpl: () => void;
   pluginNoticeComponent: PluginNoticeComponent;
 }
 

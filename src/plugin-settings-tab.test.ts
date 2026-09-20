@@ -31,8 +31,8 @@ interface BindCapture {
 }
 
 interface WhitespaceBindOptions {
-  componentToPluginSettingsValueConverter?(value: string): string;
-  pluginSettingsToComponentValueConverter?(value: string): string;
+  readonly componentToPluginSettingsValueConverter?: (value: string) => string;
+  readonly pluginSettingsToComponentValueConverter?: (value: string) => string;
 }
 
 // The real `bind` duck-types each component via property access (e.g. `setPlaceholderValue`), which the
