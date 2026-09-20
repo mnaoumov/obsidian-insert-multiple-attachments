@@ -27,7 +27,8 @@ import {
 
 const RIBBON_TITLE = 'Insert Multiple Attachments';
 const MENU_ITEM_TITLE = 'Insert multiple attachments';
-const WAIT_TIMEOUT_IN_MILLISECONDS = 20_000;
+
+// Vitest's own timeout, on the Node side of the transport, so the per-closure cap below does not apply to it.
 const TEST_TIMEOUT_IN_MILLISECONDS = 60_000;
 
 interface ScenarioResult {
@@ -75,9 +76,19 @@ async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promis
       menuItemTitle,
       mode,
       obsidianModule,
-      ribbonTitle,
-      timeoutInMilliseconds
+      ribbonTitle
     }): Promise<ScenarioResult> {
+      /*
+       * Under the transport's ~30s per-closure cap, not at it.
+       * Four waits share this one budget, so at 20_000 apiece the closure declared 80s.
+       * The eval is killed at the cap first and reported as a bare transport timeout.
+       * That names the harness rather than the wait that overran.
+       * All four wait on sub-second work - a leaf opening a note just created, a ribbon icon mounted at
+       * plugin load, an <input> the plugin creates synchronously, and two 4-byte files saved into the
+       * vault - so the smaller ceiling costs nothing.
+       */
+      const WAIT_TIMEOUT_IN_MILLISECONDS = 6000;
+
       const stamp = `${Date.now().toString()}-${Math.floor(performance.now()).toString()}`;
       const notePath = `ima-${mode}-${stamp}.md`;
       const fileNameA = `ima-a-${stamp}.png`;
@@ -98,7 +109,7 @@ async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promis
           const view = app.workspace.getActiveViewOfType(obsidianModule.MarkdownView);
           return view?.file?.path === notePath && Boolean(view.editor);
         },
-        timeoutInMilliseconds
+        timeoutInMilliseconds: WAIT_TIMEOUT_IN_MILLISECONDS
       });
 
       const view = app.workspace.getActiveViewOfType(obsidianModule.MarkdownView);
@@ -120,7 +131,7 @@ async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promis
             await waitUntil({
               message: 'ribbon icon was not rendered',
               predicate: () => document.querySelector(`[aria-label="${CSS.escape(ribbonTitle)}"]`) !== null,
-              timeoutInMilliseconds
+              timeoutInMilliseconds: WAIT_TIMEOUT_IN_MILLISECONDS
             });
             const ribbonEl = document.querySelector<HTMLElement>(`[aria-label="${CSS.escape(ribbonTitle)}"]`);
             if (ribbonEl) {
@@ -142,7 +153,7 @@ async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promis
             await waitUntil({
               message: 'file input was not created',
               predicate: () => document.querySelector('input.insert-multiple-attachments') !== null,
-              timeoutInMilliseconds
+              timeoutInMilliseconds: WAIT_TIMEOUT_IN_MILLISECONDS
             });
 
             const input = document.querySelector<HTMLInputElement>('input.insert-multiple-attachments');
@@ -159,7 +170,7 @@ async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promis
                   const current = await app.vault.read(note);
                   return current.includes(fileNameA) && current.includes(fileNameB);
                 },
-                timeoutInMilliseconds
+                timeoutInMilliseconds: WAIT_TIMEOUT_IN_MILLISECONDS
               });
               content = await app.vault.read(note);
             }
@@ -197,8 +208,7 @@ async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promis
     input: {
       menuItemTitle: MENU_ITEM_TITLE,
       mode: scenarioMode,
-      ribbonTitle: RIBBON_TITLE,
-      timeoutInMilliseconds: WAIT_TIMEOUT_IN_MILLISECONDS
+      ribbonTitle: RIBBON_TITLE
     },
     vaultPath: getTemporaryVault().path
   });
