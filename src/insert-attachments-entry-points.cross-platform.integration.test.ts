@@ -120,7 +120,7 @@ async function runInsertScenario(scenarioMode: 'contextMenu' | 'ribbon'): Promis
       let content = '';
 
       // The plugin opens the OS file picker by clicking a hidden <input type="file"> in its
-      // Constructor. Shadow the click so no native dialog appears; the files are supplied directly below.
+      // constructor. Shadow the click so no native dialog appears; the files are supplied directly below.
       HTMLInputElement.prototype.click = (): void => {
         // Intentionally suppress the native file picker during the test.
       };

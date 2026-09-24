@@ -16,7 +16,7 @@ interface DemoSettingsPatch {
 
 // The command always inserts at the cursor, which the button parks on the blank line after this marker.
 // So everything the insert added sits between the marker and the `## Steps` heading, and the reset can
-// Simply empty that gap — no copy of the note's prose to keep in step with the note itself.
+// simply empty that gap — no copy of the note's prose to keep in step with the note itself.
 const CURSOR_MARKER = '<!-- Place your cursor below and run the command. -->';
 const STEPS_HEADING = '## Steps';
 
