@@ -36,9 +36,9 @@ interface WhitespaceBindOptions {
 }
 
 // The real `bind` duck-types each component via property access (e.g. `setPlaceholderValue`), which the
-// Test-mocks strict proxy rejects. It is exercised by dev-utils' own tests, so neutralizing its return value
-// Is an allowed double — the real `PluginSettingsTabBase`, `Setting` and `TextComponent` are otherwise used
-// Unmocked, and the tab's binding intent is asserted via the recorded `bind` calls.
+// test-mocks strict proxy rejects. It is exercised by dev-utils' own tests, so neutralizing its return value
+// is an allowed double — the real `PluginSettingsTabBase`, `Setting` and `TextComponent` are otherwise used
+// unmocked, and the tab's binding intent is asserted via the recorded `bind` calls.
 let bindSpy: MockInstance<PluginSettingsTab['bind']>;
 let app: AppOriginal;
 

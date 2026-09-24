@@ -114,7 +114,7 @@ beforeAll(async () => {
   await evalInObsidian({
     async callback({ app, fontSizeInPixels, lib: { waitUntil }, subjectNotePath }) {
       // A closure runs inside ONE Appium execute/sync call, which WebDriver caps
-      // Around 30s, so every wait in here stays comfortably under it.
+      // around 30s, so every wait in here stays comfortably under it.
       const SETTLE_TIMEOUT_IN_MILLISECONDS = 15_000;
       const SETTLE_DELAY_IN_MILLISECONDS = 1000;
 
@@ -150,16 +150,16 @@ describe('mobile store screenshots', () => {
 
   it('2 - the command it registers', async () => {
     // NOT a second frame of the saved files: shot 1 already shows them. This is
-    // The way in on a phone, where the editor right-click menu the desktop set
-    // Photographs has no equivalent.
+    // the way in on a phone, where the editor right-click menu the desktop set
+    // photographs has no equivalent.
     const suggestions = await openCommandPalette('Insert multiple');
     // What is ON SCREEN, not what the registry holds: this is an EDITOR
-    // Command, so the palette hides it whenever there is no editor to run it
-    // Against — and a registry-based assertion passed happily while the frame
-    // Read 'No commands found.'
+    // command, so the palette hides it whenever there is no editor to run it
+    // against — and a registry-based assertion passed happily while the frame
+    // read 'No commands found.'
     // `includes` rather than an exact match: the palette renders the plugin
-    // Name and the command name as two elements, so `textContent` runs them
-    // Together without the separator the reader sees between them.
+    // name and the command name as two elements, so `textContent` runs them
+    // together without the separator the reader sees between them.
     expect(suggestions.some((suggestion) => suggestion.includes('Insert Multiple Attachments'))).toBe(true);
     await shootWithSoftKeyboard(2, 'One command, and the phone picker takes it from there');
   });
@@ -179,11 +179,11 @@ async function openCommandPalette(query: string): Promise<string[]> {
       const RESIZE_SETTLE_DELAY_IN_MILLISECONDS = 2000;
 
       // Let the previous shot's capture settle: the device-metrics override it
-      // Sets and clears tears down anything opened too soon afterwards.
+      // sets and clears tears down anything opened too soon afterwards.
       await sleep(RESIZE_SETTLE_DELAY_IN_MILLISECONDS);
 
       // In the EDITOR, not the reading view shot 1 ends in: this is an editor
-      // Command, and the palette drops it when there is nothing to edit.
+      // command, and the palette drops it when there is nothing to edit.
       const file = app.vault.getFileByPath(subjectNotePath);
       if (!file) {
         throw new Error(`Note is missing from the vault: ${subjectNotePath}`);
@@ -211,14 +211,14 @@ async function openCommandPalette(query: string): Promise<string[]> {
 
       input.value = text;
       // The palette filters from its own `input` handler, so setting `value`
-      // Alone would leave every command in the vault on screen.
+      // alone would leave every command in the vault on screen.
       input.dispatchEvent(new Event('input'));
 
       await sleep(SETTLE_DELAY_IN_MILLISECONDS);
 
       // Read off the SCREEN, so the shot asserts what the reader will see. The
-      // Registry would answer 'the command exists' even in the frame where the
-      // Palette says 'No commands found.'
+      // registry would answer 'the command exists' even in the frame where the
+      // palette says 'No commands found.'
       return [...document.querySelectorAll('.suggestion-item')]
         .map((item) => item.textContent)
         .filter((suggestion) => suggestion !== '');
@@ -264,8 +264,8 @@ async function pickAttachments(): Promise<number> {
       });
 
       // At the END of the note: the command embeds at the CURSOR, and left at
-      // The default the four images land above the heading, which reads as a
-      // Note that starts with a pile of pictures.
+      // the default the four images land above the heading, which reads as a
+      // note that starts with a pile of pictures.
       const view = app.workspace.getActiveViewOfType(obsidianModule.MarkdownView);
       const editor = view?.editor;
       if (editor) {
@@ -274,8 +274,8 @@ async function pickAttachments(): Promise<number> {
       }
 
       // Suppressed for exactly as long as the command needs it: a real click
-      // Here opens the platform's file dialog, which cannot be photographed and
-      // Blocks the run behind it.
+      // here opens the platform's file dialog, which cannot be photographed and
+      // blocks the run behind it.
       const originalClick = HTMLInputElement.prototype.click;
       HTMLInputElement.prototype.click = (): void => undefined;
 
@@ -300,7 +300,7 @@ async function pickAttachments(): Promise<number> {
       }
 
       // A DataTransfer is the only way to give an input a FileList, and it is
-      // Exactly the object the WebView hands it after a real pick.
+      // exactly the object the WebView hands it after a real pick.
       const transfer = new DataTransfer();
       for (const [index, fileName] of fileNames.entries()) {
         transfer.items.add(new File([buildSvg(index, fileName)], fileName, { type: 'image/svg+xml' }));
@@ -417,8 +417,8 @@ function vaultPath(): string {
  */
 async function writeFrame(index: number, caption: string, captured: Uint8Array): Promise<void> {
   // The AVD is 900x1600, so the device frame IS the store size. Asserting it
-  // Here is what keeps that true: run this against any other AVD and it fails
-  // Loudly instead of quietly shipping an off-spec image.
+  // here is what keeps that true: run this against any other AVD and it fails
+  // loudly instead of quietly shipping an off-spec image.
   expect(readPngDimensions(captured)).toStrictEqual({
     heightInPixels: HEIGHT_IN_PIXELS,
     widthInPixels: WIDTH_IN_PIXELS

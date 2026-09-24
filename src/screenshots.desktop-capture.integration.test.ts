@@ -107,7 +107,7 @@ describe('desktop store screenshots', () => {
 
   it('2 - the editor menu it adds', async () => {
     // NOT a second frame of the saved files: shot 1 already shows them in the
-    // File explorer beside the note. This is the other way in.
+    // file explorer beside the note. This is the other way in.
     const items = await openEditorContextMenu();
     expect(items).toContain('Insert multiple attachments');
     await shoot(2, 'Or reach it from the editor right-click menu');
@@ -128,7 +128,7 @@ async function openEditorContextMenu(): Promise<string> {
       const HALF = 2;
 
       // Let the previous shot capture settle: the device-metrics override it
-      // Sets and clears tears down a menu opened too soon afterwards.
+      // sets and clears tears down a menu opened too soon afterwards.
       await sleep(RESIZE_SETTLE_DELAY_IN_MILLISECONDS);
 
       const content = document.querySelector('.cm-content');
@@ -139,7 +139,7 @@ async function openEditorContextMenu(): Promise<string> {
       // A TRUSTED right-click in the editor. This is the surface where `isTrusted` actually bites:
       // Obsidian 1.13's markdown viewport listener is `(e) => { if (!e.defaultPrevented && e.isTrusted
       // && ...) }`, so a dispatched `contextmenu` can be dropped on the floor by the very code that
-      // Builds the menu this shot photographs.
+      // builds the menu this shot photographs.
       const rect = content.getBoundingClientRect();
       await clickMouse({
         button: 'right',
@@ -197,8 +197,8 @@ async function pickAttachments(): Promise<number> {
       });
 
       // At the END of the note: the command embeds at the CURSOR, and left at
-      // The default the four images landed above the heading, which reads as a
-      // Note that starts with a pile of pictures.
+      // the default the four images landed above the heading, which reads as a
+      // note that starts with a pile of pictures.
       const view = app.workspace.getActiveViewOfType(obsidianModule.MarkdownView);
       const editor = view?.editor;
       if (editor) {
@@ -207,8 +207,8 @@ async function pickAttachments(): Promise<number> {
       }
 
       // Suppressed for exactly as long as the command needs it: a real
-      // Click here opens the OS file dialog, which cannot be photographed and
-      // Blocks the run behind it.
+      // click here opens the OS file dialog, which cannot be photographed and
+      // blocks the run behind it.
       const originalClick = HTMLInputElement.prototype.click;
       HTMLInputElement.prototype.click = (): void => undefined;
 
@@ -233,7 +233,7 @@ async function pickAttachments(): Promise<number> {
       }
 
       // A DataTransfer is the only way to give an input a FileList, and it is
-      // Exactly the object the browser hands it after a real pick.
+      // exactly the object the browser hands it after a real pick.
       const transfer = new DataTransfer();
       for (const [index, fileName] of fileNames.entries()) {
         transfer.items.add(new File([buildSvg(index, fileName)], fileName, { type: 'image/svg+xml' }));

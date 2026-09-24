@@ -19,8 +19,8 @@ import type { PluginSettings } from './plugin-settings.ts';
 import { InsertAttachmentsControl } from './insert-attachments-control.ts';
 
 // The real `convertAsyncToSync` wraps the change handler as fire-and-forget, so awaiting the registered
-// Listener would not await the inner async work. Stub it to identity (the sanctioned exception) so the test
-// Can capture and await the real `handleChange`. `basename`/`extname` are left as the real path utilities.
+// listener would not await the inner async work. Stub it to identity (the sanctioned exception) so the test
+// can capture and await the real `handleChange`. `basename`/`extname` are left as the real path utilities.
 vi.mock('obsidian-dev-utils/async', async (importOriginal) => ({
   ...await importOriginal<typeof import('obsidian-dev-utils/async')>(),
   convertAsyncToSync: vi.fn(($function: (...$arguments: unknown[]) => unknown) => $function)

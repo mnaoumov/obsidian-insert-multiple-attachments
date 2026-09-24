@@ -29,7 +29,7 @@ import { Plugin } from './plugin.ts';
 import { RibbonIconComponent } from './ribbon-icon-component.ts';
 
 // A dev-utils component added via `addChild` must be loadable, so its stub returns a real `Component`. The
-// Flowing instance is the stub's return value (`mock.results[0].value`), not the discarded `this`.
+// flowing instance is the stub's return value (`mock.results[0].value`), not the discarded `this`.
 interface ObsidianComponentModule {
   Component: new () => object;
 }
@@ -38,7 +38,7 @@ async function loadableComponentStub(): Promise<ReturnType<typeof vi.fn>> {
   const { Component } = await vi.importActual<ObsidianComponentModule>('obsidian');
   // Vitest requires a non-arrow function for a mock invoked with `new`; it must return a fresh real
   // `Component`. Constructing a stub class directly would route `this` through vitest's mock proxy and
-  // Break the test-mocks `Component` constructor's own strict proxy.
+  // break the test-mocks `Component` constructor's own strict proxy.
   // eslint-disable-next-line prefer-arrow-callback -- See above; an arrow cannot be used here.
   return vi.fn(function componentStub() {
     return new Component();
@@ -78,7 +78,7 @@ vi.mock('./ribbon-icon-component.ts', async () => ({
 }));
 
 // The plugin's own settings component is added via `addChild`, so it must be loadable. The stub returns a
-// Plain loadable object; the resolved instance is passed by reference to the settings tab and command handler.
+// plain loadable object; the resolved instance is passed by reference to the settings tab and command handler.
 vi.mock('./plugin-settings-component.ts', () => ({
   // eslint-disable-next-line prefer-arrow-callback -- vitest requires a non-arrow function for `new`.
   PluginSettingsComponent: vi.fn(function pluginSettingsComponentStub() {
@@ -124,9 +124,9 @@ function instanceOf(mock: ReturnType<typeof vi.fn>): unknown {
 }
 
 // `pluginNoticeComponent` is a getter that throws when nothing has been stored, so seed it too — the
-// Open-demo-vault handler reads it. The base `onload()` would normally set it, but that is dev-utils' concern.
+// open-demo-vault handler reads it. The base `onload()` would normally set it, but that is dev-utils' concern.
 // Seed THROUGH the accessors: since obsidian-dev-utils 93.2 the components live in a bag behind them, so
-// Writing the old `_`-prefixed backing field no longer feeds the getter.
+// writing the old `_`-prefixed backing field no longer feeds the getter.
 function seedAndRun(plugin: Plugin): CommandHandler[] {
   const internals = castTo<PluginInternals>(plugin);
   const registerCommandHandlers = vi.fn<CommandHandlerComponent['registerCommandHandlers']>();
