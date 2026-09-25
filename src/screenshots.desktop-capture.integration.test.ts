@@ -20,6 +20,8 @@
  * still renders at a visible size, where a placeholder PNG would be a dot.
  */
 
+import type { MenuItem } from 'obsidian';
+
 import {
   mkdirSync,
   writeFileSync
@@ -46,6 +48,14 @@ import {
  */
 interface InlineTitleApp {
   updateInlineTitleDisplay: (this: void) => void;
+}
+
+/**
+ * The part of `MenuItem` the public API does not declare: the element that
+ * `setSection` and `setIcon` have already marked by the time `setDisabled` runs.
+ */
+interface MenuItemWithDom {
+  dom: HTMLElement;
 }
 
 const PLUGIN_ID = 'insert-multiple-attachments';
@@ -121,7 +131,7 @@ describe('desktop store screenshots', () => {
  */
 async function openEditorContextMenu(): Promise<string> {
   return await evalInObsidian({
-    async callback({ lib: { clickMouse, waitUntil } }) {
+    async callback({ lib: { clickMouse, waitUntil }, obsidianModule }) {
       const MENU_TIMEOUT_IN_MILLISECONDS = 15_000;
       const SETTLE_DELAY_IN_MILLISECONDS = 900;
       const RESIZE_SETTLE_DELAY_IN_MILLISECONDS = 2000;
@@ -136,22 +146,41 @@ async function openEditorContextMenu(): Promise<string> {
         throw new TypeError('The editor is not on screen.');
       }
 
-      // A TRUSTED right-click in the editor. This is the surface where `isTrusted` actually bites:
-      // Obsidian 1.13's markdown viewport listener is `(e) => { if (!e.defaultPrevented && e.isTrusted
-      // && ...) }`, so a dispatched `contextmenu` can be dropped on the floor by the very code that
-      // builds the menu this shot photographs.
-      const rect = content.getBoundingClientRect();
-      await clickMouse({
-        button: 'right',
-        x: rect.left + rect.width / HALF,
-        y: rect.top + rect.height / HALF
-      });
+      // Paste and Paste as plain text are drawn enabled whatever the machine's clipboard holds. Obsidian
+      // disables them from Chromium's `editFlags.canPaste`, which comes from the main process and is false
+      // whenever the clipboard has no text, AND whenever Windows is locked: a locked session denies every
+      // process the clipboard, so a capture run unattended greyed them even with text on it. Seeding the
+      // clipboard cannot help there, so the menu item is told instead, for as long as the menu is built.
+      // They are found by section and icon rather than by title, so the check does not depend on the language.
+      const PASTE_ICON_SELECTOR = 'svg.lucide-clipboard-check, svg.lucide-clipboard-type';
+      const menuItemPrototype = obsidianModule.MenuItem.prototype;
+      const originalSetDisabled = menuItemPrototype.setDisabled;
+      menuItemPrototype.setDisabled = function setDisabled(this: MenuItem & MenuItemWithDom, isDisabled: boolean): MenuItem {
+        const dom = this.dom;
+        const isPaste = dom.dataset['section'] === 'clipboard' && Boolean(dom.querySelector(PASTE_ICON_SELECTOR));
+        return originalSetDisabled.call(this, !isPaste && isDisabled);
+      };
 
-      await waitUntil({
-        message: 'the editor context menu to open',
-        predicate: () => Boolean(document.body.querySelector('.menu')),
-        timeoutInMilliseconds: MENU_TIMEOUT_IN_MILLISECONDS
-      });
+      try {
+        // A TRUSTED right-click in the editor. This is the surface where `isTrusted` actually bites:
+        // Obsidian 1.13's markdown viewport listener is `(e) => { if (!e.defaultPrevented && e.isTrusted
+        // && ...) }`, so a dispatched `contextmenu` can be dropped on the floor by the very code that
+        // builds the menu this shot photographs.
+        const rect = content.getBoundingClientRect();
+        await clickMouse({
+          button: 'right',
+          x: rect.left + rect.width / HALF,
+          y: rect.top + rect.height / HALF
+        });
+
+        await waitUntil({
+          message: 'the editor context menu to open',
+          predicate: () => Boolean(document.body.querySelector('.menu')),
+          timeoutInMilliseconds: MENU_TIMEOUT_IN_MILLISECONDS
+        });
+      } finally {
+        menuItemPrototype.setDisabled = originalSetDisabled;
+      }
 
       await sleep(SETTLE_DELAY_IN_MILLISECONDS);
 
