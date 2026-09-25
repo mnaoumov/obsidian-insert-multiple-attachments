@@ -38,6 +38,7 @@ import {
   captureObsidianScreenshot,
   evalInObsidian,
   labelScreenshot,
+  paintOutStatusBar,
   raiseSoftKeyboard,
   readPngDimensions,
   resolveEmulatorDeviceId,
@@ -100,6 +101,18 @@ const INPUT_SELECTOR = '.prompt input';
  * machine, and the shared AVD the cross-platform suites drive is a different size.
  */
 const AVD_NAME = 'obsidian_screenshots';
+
+/**
+ * How tall the device's status bar is, in framebuffer pixels, for {@link shootWithSoftKeyboard}.
+ *
+ * The harness deliberately has no default for this, because a wrong height paints over the product rather
+ * than failing: it is one AVD's measurement, not a constant of Android. 24dp at this AVD's density 320,
+ * and measured on a palette frame rather than assumed: the bar's own content occupies rows 10 to 37, rows
+ * 38 to 47 are empty, and Obsidian's top chrome starts at exactly row 48. `paintOutStatusBar`'s own
+ * clear-of-chrome check fails the capture if that ever stops being true, so this number cannot go stale
+ * quietly.
+ */
+const STATUS_BAR_HEIGHT_IN_PIXELS = 48;
 
 let deviceId = '';
 
@@ -356,7 +369,7 @@ async function pickAttachments(): Promise<number> {
  * `images/screenshots/screenshot-mobile-<index>.png`.
  *
  * The page capture is byte-reproducible — no status bar, no clock — which is why the shot that shows the
- * saved attachments keeps it. Only a shot that has to show the keyboard gives that up; see
+ * saved attachments keeps it. Only a shot that has to show the keyboard captures the device instead; see
  * {@link shootWithSoftKeyboard}.
  *
  * @param index - The 1-based listing position.
@@ -381,8 +394,10 @@ async function shoot(index: number, caption: string): Promise<void> {
  * and puts the setting back exactly; and a WebView will not ask for an IME on programmatic focus alone,
  * so `raiseSoftKeyboard` lands a real touch on the field and proves geometrically that it lifted.
  *
- * The trade, which applies to this shot alone: a device capture is **not** byte-reproducible, because the
- * status-bar clock and the battery indicator are in it.
+ * A device capture carries the status bar, whose clock and battery change between runs, so the band is
+ * painted out with `paintOutStatusBar` before the frame is written. The keyboard's suggestion strip is the
+ * other thing that used to move: `raiseSoftKeyboard` parks the caret at the start of the field, so the keyboard
+ * shows its toolbar rather than word predictions that vary between runs.
  *
  * @param index - The 1-based listing position.
  * @param caption - The caption drawn across the bottom of the frame.
@@ -401,7 +416,7 @@ async function shootWithSoftKeyboard(index: number, caption: string): Promise<vo
     deviceId
   });
 
-  await writeFrame(index, caption, captured);
+  await writeFrame(index, caption, await paintOutStatusBar(captured, { heightInPixels: STATUS_BAR_HEIGHT_IN_PIXELS }));
 }
 
 function vaultPath(): string {
