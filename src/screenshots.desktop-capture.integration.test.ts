@@ -43,22 +43,6 @@ import {
   it
 } from 'vitest';
 
-/**
- * `App`, reduced to the inline-title toggle that `obsidian-typings` does not
- * declare. Setting the config alone changes nothing on screen.
- */
-interface InlineTitleApp {
-  updateInlineTitleDisplay: (this: void) => void;
-}
-
-/**
- * The part of `MenuItem` the public API does not declare: the element that
- * `setSection` and `setIcon` have already marked by the time `setDisabled` runs.
- */
-interface MenuItemWithDom {
-  dom: HTMLElement;
-}
-
 const PLUGIN_ID = 'insert-multiple-attachments';
 const WIDTH_IN_PIXELS = 1200;
 const HEIGHT_IN_PIXELS = 800;
@@ -102,8 +86,7 @@ beforeAll(async () => {
       });
 
       app.vault.setConfig('showInlineTitle', false);
-      const inlineTitleApp: unknown = app;
-      (inlineTitleApp as InlineTitleApp).updateInlineTitleDisplay();
+      app.updateInlineTitleDisplay();
 
       await sleep(SETTLE_DELAY_IN_MILLISECONDS);
     },
@@ -159,7 +142,7 @@ async function openEditorContextMenu(): Promise<string> {
       const PASTE_ICON_SELECTOR = 'svg.lucide-clipboard-check, svg.lucide-clipboard-type';
       const menuItemPrototype = obsidianModule.MenuItem.prototype;
       const originalSetDisabled = menuItemPrototype.setDisabled;
-      menuItemPrototype.setDisabled = function setDisabled(this: MenuItem & MenuItemWithDom, isDisabled: boolean): MenuItem {
+      menuItemPrototype.setDisabled = function setDisabled(this: MenuItem, isDisabled: boolean): MenuItem {
         const dom = this.dom;
         const isPaste = dom.dataset['section'] === 'clipboard' && Boolean(dom.querySelector(PASTE_ICON_SELECTOR));
         return originalSetDisabled.call(this, !isPaste && isDisabled);
