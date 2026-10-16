@@ -3,8 +3,8 @@ import type {
   TextComponent
 } from 'obsidian';
 
-import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/plugin/plugin-settings-tab';
-import { replace } from 'obsidian-dev-utils/string';
+import { PluginSettingsTabBase } from '@mnaoumov/obsidian-lib/plugin/plugin-settings-tab';
+import { replace } from '@mnaoumov/typescript-lib/string';
 
 import type { PluginSettings } from './plugin-settings.ts';
 

@@ -1,18 +1,18 @@
+import type { CommandHandler } from '@mnaoumov/obsidian-lib/command-handlers/command-handler';
+import type { CommandHandlerComponent } from '@mnaoumov/obsidian-lib/command-handlers/command-handler-component';
+import type { PluginNoticeComponent } from '@mnaoumov/obsidian-lib/components/plugin-notice-component';
 import type {
   App as AppOriginal,
   PluginManifest
 } from 'obsidian';
-import type { CommandHandler } from 'obsidian-dev-utils/obsidian/command-handlers/command-handler';
-import type { CommandHandlerComponent } from 'obsidian-dev-utils/obsidian/command-handlers/command-handler-component';
-import type { PluginNoticeComponent } from 'obsidian-dev-utils/obsidian/components/plugin-notice-component';
 
-import { castTo } from 'obsidian-dev-utils/object-utils';
-import { OpenDemoVaultCommandHandler } from 'obsidian-dev-utils/obsidian/command-handlers/open-demo-vault-command-handler';
-import { PluginSettingsTabComponent } from 'obsidian-dev-utils/obsidian/components/plugin-settings-tab-component';
-import { PluginDataHandler } from 'obsidian-dev-utils/obsidian/data-handler';
-import { PluginEventSourceImpl } from 'obsidian-dev-utils/obsidian/plugin/plugin-event-source';
-import { PluginRibbonIconRegistrar } from 'obsidian-dev-utils/obsidian/ribbon-icon-registrar';
-import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
+import { OpenDemoVaultCommandHandler } from '@mnaoumov/obsidian-lib/command-handlers/open-demo-vault-command-handler';
+import { PluginSettingsTabComponent } from '@mnaoumov/obsidian-lib/components/plugin-settings-tab-component';
+import { PluginDataHandler } from '@mnaoumov/obsidian-lib/data-handler';
+import { PluginEventSourceImpl } from '@mnaoumov/obsidian-lib/plugin/plugin-event-source';
+import { PluginRibbonIconRegistrar } from '@mnaoumov/obsidian-lib/ribbon-icon-registrar';
+import { castTo } from '@mnaoumov/typescript-lib/object-utils';
+import { strictProxy } from '@mnaoumov/typescript-test-toolkit/strict-proxy';
 import { App } from 'obsidian-test-mocks/obsidian';
 import {
   beforeEach,
@@ -45,15 +45,15 @@ async function loadableComponentStub(): Promise<ReturnType<typeof vi.fn>> {
   });
 }
 
-vi.mock('obsidian-dev-utils/obsidian/components/plugin-settings-tab-component', async () => ({
+vi.mock('@mnaoumov/obsidian-lib/components/plugin-settings-tab-component', async () => ({
   PluginSettingsTabComponent: await loadableComponentStub()
 }));
 
-vi.mock('obsidian-dev-utils/obsidian/data-handler', () => ({
+vi.mock('@mnaoumov/obsidian-lib/data-handler', () => ({
   PluginDataHandler: vi.fn()
 }));
 
-vi.mock('obsidian-dev-utils/obsidian/plugin/plugin-event-source', () => ({
+vi.mock('@mnaoumov/obsidian-lib/plugin/plugin-event-source', () => ({
   PluginEventSourceImpl: vi.fn()
 }));
 
@@ -61,11 +61,11 @@ vi.mock('./command-handlers/invoke-command-handler.ts', () => ({
   InvokeCommandHandler: vi.fn()
 }));
 
-vi.mock('obsidian-dev-utils/obsidian/command-handlers/open-demo-vault-command-handler', () => ({
+vi.mock('@mnaoumov/obsidian-lib/command-handlers/open-demo-vault-command-handler', () => ({
   OpenDemoVaultCommandHandler: vi.fn()
 }));
 
-vi.mock('obsidian-dev-utils/obsidian/ribbon-icon-registrar', () => ({
+vi.mock('@mnaoumov/obsidian-lib/ribbon-icon-registrar', () => ({
   PluginRibbonIconRegistrar: vi.fn()
 }));
 
