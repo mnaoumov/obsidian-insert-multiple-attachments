@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-`Insert Multiple Attachments` is an Obsidian plugin that allows inserting multiple attachments at a time, extending the built-in `Insert Attachment` command to support selecting several files at once. It is built on `obsidian-dev-utils`.
+`Insert Multiple Attachments` is an Obsidian plugin that allows inserting multiple attachments at a time, extending the built-in `Insert Attachment` command to support selecting several files at once. It is built on `@mnaoumov/obsidian-lib` and `@mnaoumov/typescript-lib`, with tooling from `@mnaoumov/obsidian-dev-toolkit` and `@mnaoumov/typescript-dev-toolkit`.
 
 ## Commands
 
