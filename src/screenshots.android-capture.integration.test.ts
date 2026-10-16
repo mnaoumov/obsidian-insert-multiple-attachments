@@ -52,22 +52,6 @@ import {
   it
 } from 'vitest';
 
-/**
- * `App`, reduced to the font-size applier that `obsidian-typings` does not
- * declare. Setting `baseFontSize` alone changes nothing on screen.
- */
-interface FontSizeApp {
-  updateFontSize: (this: void) => void;
-}
-
-/**
- * `App`, reduced to the inline-title toggle that `obsidian-typings` does not
- * declare. Setting the config alone changes nothing on screen.
- */
-interface InlineTitleApp {
-  updateInlineTitleDisplay: (this: void) => void;
-}
-
 const PLUGIN_ID = 'insert-multiple-attachments';
 const WIDTH_IN_PIXELS = 900;
 const HEIGHT_IN_PIXELS = 1600;
@@ -140,12 +124,10 @@ beforeAll(async () => {
       });
 
       app.vault.setConfig('showInlineTitle', false);
-      const inlineTitleApp: unknown = app;
-      (inlineTitleApp as InlineTitleApp).updateInlineTitleDisplay();
+      app.updateInlineTitleDisplay();
 
       app.vault.setConfig('baseFontSize', fontSizeInPixels);
-      const fontApp: unknown = app;
-      (fontApp as FontSizeApp).updateFontSize();
+      app.updateFontSize();
 
       await sleep(SETTLE_DELAY_IN_MILLISECONDS);
     },
