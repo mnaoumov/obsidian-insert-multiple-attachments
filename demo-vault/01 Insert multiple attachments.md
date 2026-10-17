@@ -4,6 +4,26 @@ Obsidian's built-in **Insert attachment** command opens a file picker that only 
 
 ## Try it
 
+The first button does steps 1 and 2: it opens [Playground](<./Playground.md>), puts the cursor on its blank line, and runs the command. The file picker that opens next is a native OS dialog, so choosing the files (steps 3 and 4) is still yours to do:
+
+```code-button
+---
+caption: Put the cursor in the playground and run the insert command
+---
+await require('/demoSetup.ts').insertInPlayground(app);
+```
+
+```code-button
+---
+caption: Reset the playground
+---
+await require('/demoSetup.ts').resetPlayground(app);
+```
+
+Manual equivalent of the reset: delete the embeds the command inserted in [Playground](<./Playground.md>).
+
+Manual equivalent of the whole walkthrough:
+
 1. Open [Playground](<./Playground.md>) and place the cursor where the attachments should go.
 2. Run **Insert Multiple Attachments: Invoke** from the Command Palette.
 3. In the OS picker, select **two or more** files - hold `Ctrl`/`Cmd` (or `Shift`) to multi-select. For a quick test, pick `sample-one.txt` and `sample-two.txt` from this vault's `_assets/sample-attachments/` folder, or select a couple of your own images.
