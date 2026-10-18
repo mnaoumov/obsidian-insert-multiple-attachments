@@ -27,7 +27,7 @@ Out of the box the prefix and suffix are **empty** and the delimiter is a **blan
 
 ## Change it
 
-1. Open **Settings -> Community plugins -> Insert Multiple Attachments**.
+1. Open **Settings -> Community plugins -> `Insert Multiple Attachments`**.
 2. Edit **Attachment links prefix**, **Attachment links delimiter**, and/or **Attachment links suffix**. Spaces show as `␣` and newlines as `↵` so whitespace-only values stay visible; press `Enter` inside a field to add a newline.
 3. Re-run the command in [Playground](<./Playground.md>) and watch how the embeds are joined.
 
