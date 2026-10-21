@@ -125,7 +125,7 @@ function instanceOf(mock: ReturnType<typeof vi.fn>): unknown {
 
 // `pluginNoticeComponent` is a getter that throws when nothing has been stored, so seed it too — the
 // open-demo-vault handler reads it. The base `onload()` would normally set it, but that is dev-utils' concern.
-// Seed THROUGH the accessors: since obsidian-dev-utils 93.2 the components live in a bag behind them, so
+// Seed THROUGH the accessors: the components live in a bag behind them, so
 // writing the old `_`-prefixed backing field no longer feeds the getter.
 function seedAndRun(plugin: Plugin): CommandHandler[] {
   const internals = castTo<PluginInternals>(plugin);
@@ -133,7 +133,7 @@ function seedAndRun(plugin: Plugin): CommandHandler[] {
   internals.commandHandlerComponent = strictProxy<CommandHandlerComponent>({ registerCommandHandlers });
   internals.pluginNoticeComponent = pluginNoticeComponent;
   internals.onloadImpl();
-  // Since obsidian-dev-utils 89.0.0 the handlers are built lazily by a factory, so build them here.
+  // The handlers are built lazily by a factory, so build them here.
   const commandHandlerFactory = registerCommandHandlers.mock.calls[0]?.[0];
   if (!commandHandlerFactory) {
     throw new Error('The plugin did not register its own command handlers.');
