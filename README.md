@@ -67,7 +67,7 @@ Without `Advanced Debug Mode`, run the following command in the `DevTools Consol
 window.DEBUG.enable('insert-multiple-attachments');
 ```
 
-For more details, refer to the [documentation](https://mnaoumov.dev/obsidian-dev-utils/guides/debugging/).
+For more details, refer to the [documentation](https://mnaoumov.dev/obsidian-lib/guides/debugging/).
 
 ## Changelog
 
