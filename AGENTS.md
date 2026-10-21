@@ -31,7 +31,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Root config files** are thin re-exports — actual logic lives in `scripts/` (`eslint.config.mts` → `scripts/eslint-config.ts`, etc.).
 - **`src/`** — plugin source:
   - `main.ts` — Obsidian entry point; imports the SCSS and default-exports the `Plugin` class.
-  - `plugin.ts` — `Plugin extends PluginBase`; `onloadImpl` wires up the settings component and settings tab, then registers the `InvokeCommandHandler` via the base-provided `this.commandHandlerComponent` (the active-file provider, command registrar, and menu-event registrar are owned by `PluginBase` since obsidian-dev-utils 86.0.0).
+  - `plugin.ts` — `Plugin extends PluginBase`; `onloadImpl` wires up the settings component and settings tab, then registers the `InvokeCommandHandler` via the base-provided `this.commandHandlerComponent` (the active-file provider, command registrar, and menu-event registrar are owned by `PluginBase`).
   - `plugin-settings.ts` — `PluginSettings` data class: `attachmentLinksPrefix`, `attachmentLinksDelimiter` (default `\n\n`), `attachmentLinksSuffix`.
   - `plugin-settings-component.ts` — `PluginSettingsComponent extends PluginSettingsComponentBase`; registers a legacy-settings converter mapping the old `shouldInsertDoubleLinesBetweenAttachmentLinks` flag to a delimiter.
   - `plugin-settings-tab.ts` — `PluginSettingsTab extends PluginSettingsTabBase`; renders prefix/delimiter/suffix text settings with whitespace visualized as `␣`/`↵` via value converters.
