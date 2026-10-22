@@ -28,7 +28,7 @@ import { PluginSettingsTab } from './plugin-settings-tab.ts';
 import { Plugin } from './plugin.ts';
 import { RibbonIconComponent } from './ribbon-icon-component.ts';
 
-// A dev-utils component added via `addChild` must be loadable, so its stub returns a real `Component`. The
+// An obsidian-lib component added via `addChild` must be loadable, so its stub returns a real `Component`. The
 // flowing instance is the stub's return value (`mock.results[0].value`), not the discarded `this`.
 interface ObsidianComponentModule {
   Component: new () => object;
@@ -109,7 +109,7 @@ const manifest: PluginManifest = {
 
 // The command-handler component moved into `PluginBase` in obsidian-dev-utils 86.0.0 (`this.commandHandlerComponent`). Driving
 // `onloadImpl()` directly with a seeded command-handler component keeps this a focused wiring test — the base
-// `onload()` (notice/context/debug components) is dev-utils' own concern, covered by its tests.
+// `onload()` (notice/context/debug components) is obsidian-lib's own concern, covered by its tests.
 interface PluginInternals {
   commandHandlerComponent: CommandHandlerComponent;
   onloadImpl: () => void;
@@ -124,7 +124,7 @@ function instanceOf(mock: ReturnType<typeof vi.fn>): unknown {
 }
 
 // `pluginNoticeComponent` is a getter that throws when nothing has been stored, so seed it too — the
-// open-demo-vault handler reads it. The base `onload()` would normally set it, but that is dev-utils' concern.
+// open-demo-vault handler reads it. The base `onload()` would normally set it, but that is obsidian-lib's concern.
 // Seed THROUGH the accessors: the components live in a bag behind them, so
 // writing the old `_`-prefixed backing field no longer feeds the getter.
 function seedAndRun(plugin: Plugin): CommandHandler[] {
