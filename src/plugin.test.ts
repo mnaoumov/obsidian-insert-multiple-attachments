@@ -107,7 +107,7 @@ const manifest: PluginManifest = {
   version: '1.0.0'
 };
 
-// The command-handler component moved into `PluginBase` in obsidian-dev-utils 86.0.0 (`this.commandHandlerComponent`). Driving
+// The command-handler component is owned by `PluginBase` (`this.commandHandlerComponent`). Driving
 // `onloadImpl()` directly with a seeded command-handler component keeps this a focused wiring test — the base
 // `onload()` (notice/context/debug components) is obsidian-lib's own concern, covered by its tests.
 interface PluginInternals {
