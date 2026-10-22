@@ -36,7 +36,7 @@ interface WhitespaceBindOptions {
 }
 
 // The real `bind` duck-types each component via property access (e.g. `setPlaceholderValue`), which the
-// test-mocks strict proxy rejects. It is exercised by dev-utils' own tests, so neutralizing its return value
+// test-mocks strict proxy rejects. It is exercised by obsidian-lib's own tests, so neutralizing its return value
 // is an allowed double — the real `PluginSettingsTabBase`, `Setting` and `TextComponent` are otherwise used
 // unmocked, and the tab's binding intent is asserted via the recorded `bind` calls.
 let bindSpy: MockInstance<PluginSettingsTab['bind']>;
