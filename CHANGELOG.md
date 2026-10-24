@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## 1.4.8
+
+- test(demo-vault): floor `CodeScript Toolkit` at 15.0.0
+- chore(deps): move to obsidian-lib 6 and obsidian-dev-toolkit 5
+- docs: name obsidian-lib where comments said dev-utils
+- docs: drop a leftover obsidian-dev-utils version clause
+- docs: shorten the debugging section
+- fix(demo-vault): load the demo setup helpers from @mnaoumov/obsidian-lib
+- docs(readme): lead the Debugging section with `Advanced Debug Mode`
+- build(deps): float brace-expansion, sharp and fast-uri past their advisories
+- docs: mark plugin names as code
+- docs(demo-vault): make the Try it walkthrough runnable from code buttons
+- chore(github): point questions to Discussions from the new-issue page
+- ci: merge attesting release assets through the toolkit's reusable workflow
+- build: move off obsidian-dev-utils onto the @mnaoumov packages
+- docs: mark plugin names as code in prose and comments
+- test: merge using the obsidian-typings declarations of Obsidian internals
+
 ## 1.4.7
 
 - test(screenshots): merge the applyObsidianTheme desktop capture setup
