@@ -43,6 +43,15 @@ A copy of the vault ships with every release. You can access it via any of the f
 
 Each file lands in your vault's own attachment folder, exactly as Obsidian's single-file command would put it there.
 
+## Similar plugins
+
+- [`Add Attachment`](https://community.obsidian.md/plugins/add-attachment) — also picks many files in one dialog and saves them where Obsidian's attachment setting says, and can rename them after the note and downscale images on the way in; it has no prefix, delimiter or suffix around the links.
+- [`Simple Image Inserter`](https://community.obsidian.md/plugins/simple-image-inserter) — picks several images at once, but images only, each embedded on its own line as a `![[full/path]]` link whatever your link format setting says.
+- [`Bulk Image to File Importer`](https://community.obsidian.md/plugins/bulk-image-to-file-importer) — imports a batch of images through its own window, either appended to an existing note or as a new note per image with an optional template and JPEG compression; it does not insert at the cursor.
+- [`Mobile UX`](https://community.obsidian.md/plugins/mobile) — a mobile toolbar and gesture plugin whose toolbar includes a multi-file attachment action, joining the links with a line break; the action is one part of a much larger plugin, with no control over the text around the links.
+
+Last searched for similar plugins on 2026-10-26.
+
 ## Installation
 
 The plugin is available in [the official Community Plugins repository](https://community.obsidian.md/plugins/insert-multiple-attachments).
