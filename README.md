@@ -43,12 +43,16 @@ A copy of the vault ships with every release. You can access it via any of the f
 
 Each file lands in your vault's own attachment folder, exactly as Obsidian's single-file command would put it there.
 
-## Similar plugins
+## See also
 
-- [`Add Attachment`](https://community.obsidian.md/plugins/add-attachment) — also picks many files in one dialog and saves them where Obsidian's attachment setting says, and can rename them after the note and downscale images on the way in; it has no prefix, delimiter or suffix around the links.
-- [`Simple Image Inserter`](https://community.obsidian.md/plugins/simple-image-inserter) — picks several images at once, but images only, each embedded on its own line as a `![[full/path]]` link whatever your link format setting says.
-- [`Bulk Image to File Importer`](https://community.obsidian.md/plugins/bulk-image-to-file-importer) — imports a batch of images through its own window, either appended to an existing note or as a new note per image with an optional template and JPEG compression; it does not insert at the cursor.
-- [`Mobile UX`](https://community.obsidian.md/plugins/mobile) — a mobile toolbar and gesture plugin whose toolbar includes a multi-file attachment action, joining the links with a line break; the action is one part of a much larger plugin, with no control over the text around the links.
+[My other Obsidian resources](https://github.com/mnaoumov/obsidian-resources)
+
+| Plugin | Features | How `Insert Multiple Attachments` differs |
+| --- | --- | --- |
+| [`Add Attachment`](https://community.obsidian.md/plugins/add-attachment) | Multi-file picker; native attachment destination; note-based renames; image downscaling | Same batch-insert goal; configurable link prefix, delimiter and suffix |
+| [`Bulk Image to File Importer`](https://community.obsidian.md/plugins/bulk-image-to-file-importer) | Batch image import window; append or per-image notes; templates; JPEG compression | Different insertion point: current cursor; any file type |
+| [`Mobile UX`](https://community.obsidian.md/plugins/mobile) | Mobile toolbar and gestures; multi-file attachment action; newline-separated links | Narrower focus: batch attachment insertion; configurable text around links |
+| [`Simple Image Inserter`](https://community.obsidian.md/plugins/simple-image-inserter) | Multi-image picker; one full-path Obsidian link embed per line | Broader input: any file type; follows link-format settings; configurable surrounding text |
 
 Last searched for similar plugins on 2026-10-26.
 
@@ -85,10 +89,6 @@ Contributions are welcome — see [CONTRIBUTING](./CONTRIBUTING.md) to get set u
 <a href="https://www.buymeacoffee.com/mnaoumov" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="60" width="217"></a>
 
 <!-- markdownlint-enable MD033 -->
-
-## My other Obsidian resources
-
-[See my other Obsidian resources](https://github.com/mnaoumov/obsidian-resources).
 
 ## License
 
