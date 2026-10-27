@@ -40,14 +40,14 @@ interface CreateHarnessOptions {
 }
 
 interface Harness {
-  addRibbonIcon: Mock<(params: RibbonIconRegistrarAddRibbonIconParams) => HTMLElement>;
-  app: App;
-  capturedEventCallbacks: Map<string, () => void>;
-  component: RibbonIconComponent;
-  pluginSettingsComponent: PluginSettingsComponent;
-  ribbonIconEl: HTMLElement;
-  settings: PluginSettings;
-  showNotice: Mock<PluginNoticeComponent['showNotice']>;
+  readonly addRibbonIcon: Mock<(params: RibbonIconRegistrarAddRibbonIconParams) => HTMLElement>;
+  readonly app: App;
+  readonly capturedEventCallbacks: Map<string, () => void>;
+  readonly component: RibbonIconComponent;
+  readonly pluginSettingsComponent: PluginSettingsComponent;
+  readonly ribbonIconEl: HTMLElement;
+  readonly settings: PluginSettings;
+  readonly showNotice: Mock<PluginNoticeComponent['showNotice']>;
 }
 
 function createHarness(options?: CreateHarnessOptions): Harness {

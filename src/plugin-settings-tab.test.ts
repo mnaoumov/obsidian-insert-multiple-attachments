@@ -26,8 +26,8 @@ import type { PluginSettings } from './plugin-settings.ts';
 import { PluginSettingsTab } from './plugin-settings-tab.ts';
 
 interface BindCapture {
-  component: TextComponent;
-  options: WhitespaceBindOptions;
+  readonly component: TextComponent;
+  readonly options: WhitespaceBindOptions;
 }
 
 interface WhitespaceBindOptions {
