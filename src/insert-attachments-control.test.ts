@@ -41,21 +41,22 @@ interface MockAppOverrides {
 }
 
 interface MockFile {
-  arrayBuffer: () => Promise<ArrayBuffer>;
+  readonly arrayBuffer: () => Promise<ArrayBuffer>;
   readonly name: string;
 }
 
 interface MockFileInput {
-  addEventListener: ReturnType<typeof vi.fn>;
-  click: ReturnType<typeof vi.fn>;
-  detach: ReturnType<typeof vi.fn>;
+  readonly addEventListener: ReturnType<typeof vi.fn>;
+  readonly click: ReturnType<typeof vi.fn>;
+  readonly detach: ReturnType<typeof vi.fn>;
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests replace the selected files before firing the change event.
   files: MockFileList | null;
-  focus: ReturnType<typeof vi.fn>;
-  triggerChange: () => Promise<void>;
+  readonly focus: ReturnType<typeof vi.fn>;
+  readonly triggerChange: () => Promise<void>;
 }
 
 interface MockFileList {
-  [Symbol.iterator]: () => Iterator<MockFile>;
+  readonly [Symbol.iterator]: () => Iterator<MockFile>;
 }
 
 let mockFileEl: MockFileInput;

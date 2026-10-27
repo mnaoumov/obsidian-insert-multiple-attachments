@@ -31,7 +31,7 @@ import { RibbonIconComponent } from './ribbon-icon-component.ts';
 // An obsidian-lib component added via `addChild` must be loadable, so its stub returns a real `Component`. The
 // flowing instance is the stub's return value (`mock.results[0].value`), not the discarded `this`.
 interface ObsidianComponentModule {
-  Component: new () => object;
+  readonly Component: new () => object;
 }
 
 async function loadableComponentStub(): Promise<ReturnType<typeof vi.fn>> {
@@ -111,8 +111,10 @@ const manifest: PluginManifest = {
 // `onloadImpl()` directly with a seeded command-handler component keeps this a focused wiring test — the base
 // `onload()` (notice/context/debug components) is obsidian-lib's own concern, covered by its tests.
 interface PluginInternals {
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- The wiring harness seeds the base component through its setter.
   commandHandlerComponent: CommandHandlerComponent;
-  onloadImpl: () => void;
+  readonly onloadImpl: () => void;
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- The wiring harness seeds the notice component through its setter.
   pluginNoticeComponent: PluginNoticeComponent;
 }
 
