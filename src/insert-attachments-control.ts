@@ -117,7 +117,7 @@ export class InsertAttachmentsControl {
         const filename = basename(file.name);
         const data = await file.arrayBuffer();
         const extension = extname(filename);
-        attachmentFiles.push(await this.app.saveAttachment(basename(filename, extension), extension.slice(1), data));
+        attachmentFiles.push(await this.saveAttachmentForNote(note, basename(filename, extension), extension.slice(1), data));
       }
 
       // Generated after every save, against the note's path as it is now, so a rename meanwhile is followed.
@@ -204,5 +204,32 @@ export class InsertAttachmentsControl {
   private restoreSelections(): void {
     this.editor.focus();
     this.editor.setSelections([...this.selections]);
+  }
+
+  /*
+   * `app.saveAttachment` places the file by the ACTIVE note, and so do the plugins that patch it, which is where
+   * their own naming and conversion live, so it is called rather than bypassed. The user may have switched to
+   * another note while the earlier files were saved, though. Obsidian reads the active note as the call starts,
+   * before its first `await`, so answering with the captured note for that synchronous start places the file by
+   * the right note, and the answer reaches no other code: nothing else runs until the call yields.
+   */
+  private saveAttachmentForNote(note: TFile, name: string, extension: string, data: ArrayBuffer): Promise<TFile> {
+    const workspace = this.app.workspace;
+    if (workspace.getActiveFile() === note) {
+      return this.app.saveAttachment(name, extension, data);
+    }
+
+    // Another plugin's patch sits on the instance; Obsidian's own method sits on the prototype, with nothing to restore.
+    const ownGetActiveFileDescriptor = Object.getOwnPropertyDescriptor(workspace, 'getActiveFile');
+    workspace.getActiveFile = (): TFile => note;
+    try {
+      return this.app.saveAttachment(name, extension, data);
+    } finally {
+      if (ownGetActiveFileDescriptor) {
+        Object.defineProperty(workspace, 'getActiveFile', ownGetActiveFileDescriptor);
+      } else {
+        Reflect.deleteProperty(workspace, 'getActiveFile');
+      }
+    }
   }
 }

@@ -565,6 +565,57 @@ describe('InsertAttachmentsControl', () => {
     expect(app.vault.process).toHaveBeenCalledWith(NOTE, expect.any(Function));
   });
 
+  it('should save every attachment by the captured note when the user switches to another note mid-save', async (): Promise<void> => {
+    const OTHER_NOTE = castTo<TFile>({ path: 'other.md' });
+    const activeFilesSeenBySave: (null | TFile)[] = [];
+    const app = createMockApp();
+    const originalGetActiveFile = app.workspace.getActiveFile;
+    vi.mocked(app.saveAttachment).mockImplementation(() => {
+      activeFilesSeenBySave.push(app.workspace.getActiveFile());
+      // The user opens another note once the first file is saved.
+      vi.mocked(originalGetActiveFile).mockReturnValue(OTHER_NOTE);
+      return Promise.resolve(castTo<TFile>({ path: 'a.png' }));
+    });
+    createControl({ app });
+    pickFiles(['file1.png', 'file2.png']);
+
+    await mockFileEl.triggerChange();
+
+    expect(activeFilesSeenBySave).toEqual([NOTE, NOTE]);
+    expect(app.workspace.getActiveFile).toBe(originalGetActiveFile);
+    expect(app.workspace.getActiveFile()).toBe(OTHER_NOTE);
+  });
+
+  it('should leave no own getActiveFile behind when the workspace had none', async (): Promise<void> => {
+    let activeFile = NOTE;
+    // Obsidian's own `getActiveFile` lives on the prototype, so the workspace has no own property to restore.
+    const workspace = castTo<App['workspace']>(Object.create({ getActiveFile: (): TFile => activeFile }));
+    const app = createMockApp();
+    Object.assign(app, { workspace });
+    let activeFileSeenBySave: null | TFile = null;
+    vi.mocked(app.saveAttachment).mockImplementation(() => {
+      activeFileSeenBySave = workspace.getActiveFile();
+      return Promise.resolve(castTo<TFile>({ path: 'a.png' }));
+    });
+    createControl({ app });
+    const file: MockFile = {
+      arrayBuffer: () => {
+        // The user opens another note while the file is read.
+        activeFile = castTo<TFile>({ path: 'other.md' });
+        return Promise.resolve(new ArrayBuffer(8));
+      },
+      name: 'photo.png'
+    };
+    mockFileEl.files = {
+      [Symbol.iterator]: (): IterableIterator<MockFile> => [file][Symbol.iterator]()
+    };
+
+    await mockFileEl.triggerChange();
+
+    expect(activeFileSeenBySave).toBe(NOTE);
+    expect(Object.hasOwn(workspace, 'getActiveFile')).toBe(false);
+  });
+
   it('should not insert anything when the note was deleted meanwhile', async (): Promise<void> => {
     const app = createMockApp({ vaultFile: null });
     createControl({ app });
