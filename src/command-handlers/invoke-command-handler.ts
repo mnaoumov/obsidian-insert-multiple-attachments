@@ -1,3 +1,4 @@
+import type { PluginNoticeComponent } from '@mnaoumov/obsidian-lib/components/plugin-notice-component';
 import type {
   App,
   Editor
@@ -11,11 +12,13 @@ import { InsertAttachmentsControl } from '../insert-attachments-control.ts';
 
 interface InvokeCommandHandlerConstructorParams {
   readonly app: App;
+  readonly pluginNoticeComponent: PluginNoticeComponent;
   readonly pluginSettingsComponent: PluginSettingsComponent;
 }
 
 export class InvokeCommandHandler extends EditorCommandHandler {
   private readonly app: App;
+  private readonly pluginNoticeComponent: PluginNoticeComponent;
   private readonly pluginSettingsComponent: PluginSettingsComponent;
 
   public constructor(params: InvokeCommandHandlerConstructorParams) {
@@ -26,6 +29,7 @@ export class InvokeCommandHandler extends EditorCommandHandler {
       name: 'Invoke'
     });
     this.app = params.app;
+    this.pluginNoticeComponent = params.pluginNoticeComponent;
     this.pluginSettingsComponent = params.pluginSettingsComponent;
   }
 
@@ -33,6 +37,7 @@ export class InvokeCommandHandler extends EditorCommandHandler {
     new InsertAttachmentsControl({
       app: this.app,
       editor,
+      pluginNoticeComponent: this.pluginNoticeComponent,
       pluginSettingsComponent: this.pluginSettingsComponent
     });
   }

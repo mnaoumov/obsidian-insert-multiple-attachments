@@ -6,6 +6,7 @@ import { PluginEventSourceImpl } from '@mnaoumov/obsidian-lib/plugin/plugin-even
 import { PluginRibbonIconRegistrar } from '@mnaoumov/obsidian-lib/ribbon-icon-registrar';
 
 import { InvokeCommandHandler } from './command-handlers/invoke-command-handler.ts';
+import { getPendingInsertionExtension } from './pending-insertion-field.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
 import { PluginSettingsTab } from './plugin-settings-tab.ts';
 import { RibbonIconComponent } from './ribbon-icon-component.ts';
@@ -28,6 +29,7 @@ export class Plugin extends PluginBase {
         })
       })
     );
+    this.registerEditorExtension(getPendingInsertionExtension());
     this.addChild(
       new RibbonIconComponent({
         app: this.app,
@@ -39,6 +41,7 @@ export class Plugin extends PluginBase {
     await this.commandHandlerComponent.registerCommandHandlers(() => [
       new InvokeCommandHandler({
         app: this.app,
+        pluginNoticeComponent: this.pluginNoticeComponent,
         pluginSettingsComponent
       }),
       new OpenDemoVaultCommandHandler({

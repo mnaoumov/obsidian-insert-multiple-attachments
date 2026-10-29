@@ -44,6 +44,7 @@ interface Harness {
   readonly app: App;
   readonly capturedEventCallbacks: Map<string, () => void>;
   readonly component: RibbonIconComponent;
+  readonly pluginNoticeComponent: PluginNoticeComponent;
   readonly pluginSettingsComponent: PluginSettingsComponent;
   readonly ribbonIconEl: HTMLElement;
   readonly settings: PluginSettings;
@@ -88,6 +89,7 @@ function createHarness(options?: CreateHarnessOptions): Harness {
     app,
     capturedEventCallbacks,
     component,
+    pluginNoticeComponent,
     pluginSettingsComponent,
     ribbonIconEl,
     settings,
@@ -183,6 +185,7 @@ describe('RibbonIconComponent', () => {
     expect(hoisted.mockInsertAttachmentsControlConstructor).toHaveBeenCalledWith({
       app: harness.app,
       editor,
+      pluginNoticeComponent: harness.pluginNoticeComponent,
       pluginSettingsComponent: harness.pluginSettingsComponent
     });
     expect(harness.showNotice).not.toHaveBeenCalled();
