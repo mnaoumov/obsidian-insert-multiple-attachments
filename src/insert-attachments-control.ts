@@ -1,6 +1,7 @@
 import type {
   App,
-  Editor
+  Editor,
+  EditorSelection
 } from 'obsidian';
 
 import { convertAsyncToSync } from '@mnaoumov/typescript-lib/async';
@@ -24,12 +25,15 @@ export class InsertAttachmentsControl {
   private readonly fileEl: HTMLInputElement;
   private readonly handleFocusClickBound: (this: void) => void;
   private readonly pluginSettingsComponent: PluginSettingsComponent;
+  private readonly selections: readonly EditorSelection[];
   private timeoutId = 0;
 
   public constructor(params: InsertAttachmentsControlConstructorParams) {
     this.app = params.app;
     this.editor = params.editor;
     this.pluginSettingsComponent = params.pluginSettingsComponent;
+    // The file picker takes the focus away from the editor, so the cursor has to be given back once it closes.
+    this.selections = this.editor.listSelections();
     this.currentActiveDocument = activeDocument;
     this.handleFocusClickBound = this.handleFocusClick.bind(this);
     this.fileEl = this.currentActiveDocument.body.createEl('input', {
@@ -40,6 +44,7 @@ export class InsertAttachmentsControl {
       type: 'file'
     });
     this.fileEl.addEventListener('change', convertAsyncToSync(this.handleChange.bind(this)));
+    this.fileEl.addEventListener('cancel', this.handleCancel.bind(this));
     this.fileEl.focus();
     this.fileEl.click();
     window.setTimeout(() => {
@@ -52,8 +57,15 @@ export class InsertAttachmentsControl {
     this.fileEl.detach();
   }
 
+  private handleCancel(): void {
+    this.removeHandlers();
+    this.restoreSelections();
+    this.detachFileEl();
+  }
+
   private async handleChange(): Promise<void> {
     this.removeHandlers();
+    this.restoreSelections();
     if (!this.fileEl.files) {
       this.detachFileEl();
       return;
@@ -82,7 +94,9 @@ export class InsertAttachmentsControl {
     const linksString = this.pluginSettingsComponent.settings.attachmentLinksPrefix
       + links.join(this.pluginSettingsComponent.settings.attachmentLinksDelimiter)
       + this.pluginSettingsComponent.settings.attachmentLinksSuffix;
+    // `replaceSelection` leaves the cursor after the inserted links.
     this.editor.replaceSelection(linksString);
+    this.editor.focus();
     this.detachFileEl();
   }
 
@@ -96,5 +110,10 @@ export class InsertAttachmentsControl {
     this.currentActiveDocument.removeEventListener('focus', this.handleFocusClickBound);
     this.currentActiveDocument.removeEventListener('click', this.handleFocusClickBound);
     window.clearTimeout(this.timeoutId);
+  }
+
+  private restoreSelections(): void {
+    this.editor.focus();
+    this.editor.setSelections([...this.selections]);
   }
 }
