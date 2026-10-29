@@ -64,6 +64,7 @@ export class RibbonIconComponent extends ComponentEx {
     new InsertAttachmentsControl({
       app: this.app,
       editor,
+      pluginNoticeComponent: this.pluginNoticeComponent,
       pluginSettingsComponent: this.pluginSettingsComponent
     });
   }

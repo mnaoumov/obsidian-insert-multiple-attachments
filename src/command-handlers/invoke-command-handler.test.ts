@@ -1,3 +1,4 @@
+import type { PluginNoticeComponent } from '@mnaoumov/obsidian-lib/components/plugin-notice-component';
 import type {
   App,
   Editor,
@@ -37,9 +38,14 @@ vi.mock('../insert-attachments-control.ts', () => ({
   InsertAttachmentsControl: hoisted.mockInsertAttachmentsControlConstructor
 }));
 
-function createHandler(app?: App, pluginSettingsComponent?: PluginSettingsComponent): InvokeCommandHandler {
+function createHandler(
+  app?: App,
+  pluginSettingsComponent?: PluginSettingsComponent,
+  pluginNoticeComponent?: PluginNoticeComponent
+): InvokeCommandHandler {
   return new InvokeCommandHandler({
     app: app ?? strictProxy<App>({}),
+    pluginNoticeComponent: pluginNoticeComponent ?? strictProxy<PluginNoticeComponent>({}),
     pluginSettingsComponent: pluginSettingsComponent ?? strictProxy<PluginSettingsComponent>({})
   });
 }
@@ -75,7 +81,8 @@ describe('InvokeCommandHandler', () => {
   it('should create InsertAttachmentsControl when the command executes', (): void => {
     const app = strictProxy<App>({});
     const pluginSettingsComponent = strictProxy<PluginSettingsComponent>({});
-    const handler = createHandler(app, pluginSettingsComponent);
+    const pluginNoticeComponent = strictProxy<PluginNoticeComponent>({});
+    const handler = createHandler(app, pluginSettingsComponent, pluginNoticeComponent);
 
     const editor = strictProxy<Editor>({});
     const context = strictProxy<MarkdownFileInfo>({});
@@ -85,6 +92,7 @@ describe('InvokeCommandHandler', () => {
     expect(hoisted.mockInsertAttachmentsControlConstructor).toHaveBeenCalledWith({
       app,
       editor,
+      pluginNoticeComponent,
       pluginSettingsComponent
     });
   });

@@ -1,9 +1,16 @@
+import type { PluginNoticeComponent } from '@mnaoumov/obsidian-lib/components/plugin-notice-component';
 import type {
   App,
   Editor,
-  EditorSelection
+  EditorSelection,
+  TFile
 } from 'obsidian';
 
+import {
+  EditorSelection as CodeMirrorEditorSelection,
+  EditorState
+} from '@codemirror/state';
+import { EditorView } from '@codemirror/view';
 import { castTo } from '@mnaoumov/typescript-lib/object-utils';
 import {
   afterEach,
@@ -18,6 +25,10 @@ import type { PluginSettingsComponent } from './plugin-settings-component.ts';
 import type { PluginSettings } from './plugin-settings.ts';
 
 import { InsertAttachmentsControl } from './insert-attachments-control.ts';
+import {
+  getPendingInsertionExtension,
+  pendingInsertionField
+} from './pending-insertion-field.ts';
 
 // The real `convertAsyncToSync` wraps the change handler as fire-and-forget, so awaiting the registered
 // listener would not await the inner async work. Stub it to identity (the sanctioned exception) so the test
@@ -32,13 +43,11 @@ interface CreateControlParams {
   readonly pluginSettingsComponent?: PluginSettingsComponent;
 }
 
-interface MockActiveFile {
-  readonly path: string;
-}
-
 interface MockAppOverrides {
-  readonly activeFile?: MockActiveFile | null;
+  readonly activeFile?: null | TFile;
   readonly generateLink?: string;
+  readonly saveAttachment?: () => Promise<TFile>;
+  readonly vaultFile?: null | TFile;
 }
 
 interface MockFile {
@@ -61,6 +70,10 @@ interface MockFileList {
   readonly [Symbol.iterator]: () => Iterator<MockFile>;
 }
 
+const NOTE_CONTENT = 'hello world';
+const CURSOR_OFFSET = 5;
+const NOTE = castTo<TFile>({ path: 'note.md' });
+
 const RECORDED_SELECTIONS: readonly EditorSelection[] = [
   {
     anchor: { ch: 2, line: 1 },
@@ -73,28 +86,32 @@ let mockDocumentAddEventListener: ReturnType<typeof vi.fn>;
 let mockDocumentRemoveEventListener: ReturnType<typeof vi.fn>;
 let mockSetTimeout: ReturnType<typeof vi.fn>;
 let mockClearTimeout: ReturnType<typeof vi.fn>;
+let editorView: EditorView;
+let showNotice: ReturnType<typeof vi.fn>;
 
 function createControl(params?: CreateControlParams): InsertAttachmentsControl {
-  const app = params?.app ?? createMockApp();
-  const editor = createMockEditor();
-  const pluginSettingsComponent = params?.pluginSettingsComponent ?? createMockComponent();
-
   return new InsertAttachmentsControl({
-    app,
-    editor,
-    pluginSettingsComponent
+    app: params?.app ?? createMockApp(),
+    editor: createMockEditor(),
+    pluginNoticeComponent: createMockNoticeComponent(),
+    pluginSettingsComponent: params?.pluginSettingsComponent ?? createMockComponent()
   });
 }
 
 function createMockApp(overrides?: MockAppOverrides): App {
-  const activeFile = 'activeFile' in (overrides ?? {}) ? overrides?.activeFile : { path: 'note.md' };
+  const activeFile = overrides && 'activeFile' in overrides ? overrides.activeFile : NOTE;
+  const vaultFile = overrides && 'vaultFile' in overrides ? overrides.vaultFile : NOTE;
   const generateLink = overrides?.generateLink ?? '[[attachment.png]]';
 
   return castTo<App>({
     fileManager: {
       generateMarkdownLink: vi.fn().mockReturnValue(generateLink)
     },
-    saveAttachment: vi.fn().mockResolvedValue({ path: 'attachments/attachment.png' }),
+    saveAttachment: overrides?.saveAttachment ?? vi.fn().mockResolvedValue({ path: 'attachments/attachment.png' }),
+    vault: {
+      getFileByPath: vi.fn().mockReturnValue(vaultFile),
+      process: vi.fn()
+    },
     workspace: {
       getActiveFile: vi.fn().mockReturnValue(activeFile)
     }
@@ -114,9 +131,9 @@ function createMockComponent(overrides?: Partial<PluginSettings>): PluginSetting
 
 function createMockEditor(): Editor {
   return castTo<Editor>({
+    cm: editorView,
     focus: vi.fn(),
     listSelections: vi.fn().mockReturnValue(RECORDED_SELECTIONS),
-    replaceSelection: vi.fn(),
     setSelections: vi.fn()
   });
 }
@@ -142,12 +159,44 @@ function createMockFileEl(): MockFileInput {
   return el;
 }
 
+function createMockNoticeComponent(): PluginNoticeComponent {
+  return castTo<PluginNoticeComponent>({ showNotice });
+}
+
+function getDoc(): string {
+  return editorView.state.doc.toString();
+}
+
+function getPendingInsertionCount(): number {
+  return editorView.state.field(pendingInsertionField).size;
+}
+
+function pickFiles(names: readonly string[]): void {
+  const mockFiles: MockFile[] = names.map((name) => ({
+    arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8)),
+    name
+  }));
+  mockFileEl.files = {
+    [Symbol.iterator]: (): IterableIterator<MockFile> => mockFiles[Symbol.iterator]()
+  };
+}
+
 describe('InsertAttachmentsControl', () => {
   beforeEach(() => {
     mockDocumentAddEventListener = vi.fn();
     mockDocumentRemoveEventListener = vi.fn();
     mockSetTimeout = vi.fn().mockReturnValue(42);
     mockClearTimeout = vi.fn();
+    showNotice = vi.fn();
+
+    editorView = new EditorView({
+      state: EditorState.create({
+        doc: NOTE_CONTENT,
+        extensions: getPendingInsertionExtension(),
+        selection: CodeMirrorEditorSelection.cursor(CURSOR_OFFSET)
+      })
+    });
+    activeDocument.body.append(editorView.dom);
 
     mockFileEl = createMockFileEl();
 
@@ -177,6 +226,8 @@ describe('InsertAttachmentsControl', () => {
   });
 
   afterEach(() => {
+    editorView.destroy();
+    editorView.dom.remove();
     vi.restoreAllMocks();
     vi.clearAllMocks();
   });
@@ -224,134 +275,63 @@ describe('InsertAttachmentsControl', () => {
   });
 
   it('should detach file element when no active file', async (): Promise<void> => {
-    const app = createMockApp({ activeFile: null });
-    createControl({ app });
-
-    const mockFiles: MockFile[] = [{ arrayBuffer: vi.fn(), name: 'photo.png' }];
-    mockFileEl.files = {
-      [Symbol.iterator]: (): IterableIterator<MockFile> => mockFiles[Symbol.iterator]()
-    };
+    createControl({ app: createMockApp({ activeFile: null }) });
+    pickFiles(['photo.png']);
 
     await mockFileEl.triggerChange();
 
     expect(mockFileEl.detach).toHaveBeenCalled();
+    expect(getDoc()).toBe(NOTE_CONTENT);
   });
 
-  it('should insert link for each selected file', async (): Promise<void> => {
-    const app = createMockApp({ generateLink: '![[attachment.png]]' });
-    const editor = createMockEditor();
-    const pluginSettingsComponent = createMockComponent();
-
-    new InsertAttachmentsControl({ app, editor, pluginSettingsComponent });
-
-    const mockData = new ArrayBuffer(8);
-    const mockFiles: MockFile[] = [
-      { arrayBuffer: vi.fn().mockResolvedValue(mockData), name: 'photo.png' }
-    ];
-    mockFileEl.files = {
-      [Symbol.iterator]: (): IterableIterator<MockFile> => mockFiles[Symbol.iterator]()
-    };
+  it('should insert the link at the cursor', async (): Promise<void> => {
+    createControl({ app: createMockApp({ generateLink: '![[attachment.png]]' }) });
+    pickFiles(['photo.png']);
 
     await mockFileEl.triggerChange();
 
-    expect(editor.replaceSelection).toHaveBeenCalledWith('![[attachment.png]]');
+    expect(getDoc()).toBe('hello![[attachment.png]] world');
   });
 
   it('should prefix link with ! when it does not start with !', async (): Promise<void> => {
-    const app = createMockApp({ generateLink: '[[attachment.png]]' });
-    const editor = createMockEditor();
-    const pluginSettingsComponent = createMockComponent();
-
-    new InsertAttachmentsControl({ app, editor, pluginSettingsComponent });
-
-    const mockData = new ArrayBuffer(8);
-    const mockFiles: MockFile[] = [
-      { arrayBuffer: vi.fn().mockResolvedValue(mockData), name: 'photo.png' }
-    ];
-    mockFileEl.files = {
-      [Symbol.iterator]: (): IterableIterator<MockFile> => mockFiles[Symbol.iterator]()
-    };
+    createControl({ app: createMockApp({ generateLink: '[[attachment.png]]' }) });
+    pickFiles(['photo.png']);
 
     await mockFileEl.triggerChange();
 
-    expect(editor.replaceSelection).toHaveBeenCalledWith('![[attachment.png]]');
-  });
-
-  it('should not double-prefix ! when link already starts with !', async (): Promise<void> => {
-    const app = createMockApp({ generateLink: '![[attachment.png]]' });
-    const editor = createMockEditor();
-    const pluginSettingsComponent = createMockComponent();
-
-    new InsertAttachmentsControl({ app, editor, pluginSettingsComponent });
-
-    const mockData = new ArrayBuffer(8);
-    const mockFiles: MockFile[] = [
-      { arrayBuffer: vi.fn().mockResolvedValue(mockData), name: 'photo.png' }
-    ];
-    mockFileEl.files = {
-      [Symbol.iterator]: (): IterableIterator<MockFile> => mockFiles[Symbol.iterator]()
-    };
-
-    await mockFileEl.triggerChange();
-
-    expect(editor.replaceSelection).toHaveBeenCalledWith('![[attachment.png]]');
+    expect(getDoc()).toBe('hello![[attachment.png]] world');
   });
 
   it('should apply prefix and suffix from settings', async (): Promise<void> => {
-    const app = createMockApp({ generateLink: '![[photo.png]]' });
-    const editor = createMockEditor();
-    const pluginSettingsComponent = createMockComponent({
-      attachmentLinksPrefix: 'START\n',
-      attachmentLinksSuffix: '\nEND'
+    createControl({
+      app: createMockApp({ generateLink: '![[photo.png]]' }),
+      pluginSettingsComponent: createMockComponent({
+        attachmentLinksPrefix: 'START\n',
+        attachmentLinksSuffix: '\nEND'
+      })
     });
-
-    new InsertAttachmentsControl({ app, editor, pluginSettingsComponent });
-
-    const mockData = new ArrayBuffer(8);
-    const mockFiles: MockFile[] = [
-      { arrayBuffer: vi.fn().mockResolvedValue(mockData), name: 'photo.png' }
-    ];
-    mockFileEl.files = {
-      [Symbol.iterator]: (): IterableIterator<MockFile> => mockFiles[Symbol.iterator]()
-    };
+    pickFiles(['photo.png']);
 
     await mockFileEl.triggerChange();
 
-    expect(editor.replaceSelection).toHaveBeenCalledWith('START\n![[photo.png]]\nEND');
+    expect(getDoc()).toBe('helloSTART\n![[photo.png]]\nEND world');
   });
 
   it('should join multiple links with delimiter', async (): Promise<void> => {
-    const app = createMockApp({ generateLink: '![[file.png]]' });
-    const editor = createMockEditor();
-    const pluginSettingsComponent = createMockComponent({ attachmentLinksDelimiter: '---' });
-
-    new InsertAttachmentsControl({ app, editor, pluginSettingsComponent });
-
-    const mockData = new ArrayBuffer(8);
-    const mockFiles: MockFile[] = [
-      { arrayBuffer: vi.fn().mockResolvedValue(mockData), name: 'file1.png' },
-      { arrayBuffer: vi.fn().mockResolvedValue(mockData), name: 'file2.png' }
-    ];
-    mockFileEl.files = {
-      [Symbol.iterator]: (): IterableIterator<MockFile> => mockFiles[Symbol.iterator]()
-    };
+    createControl({
+      app: createMockApp({ generateLink: '![[file.png]]' }),
+      pluginSettingsComponent: createMockComponent({ attachmentLinksDelimiter: '---' })
+    });
+    pickFiles(['file1.png', 'file2.png']);
 
     await mockFileEl.triggerChange();
 
-    expect(editor.replaceSelection).toHaveBeenCalledWith('![[file.png]]---![[file.png]]');
+    expect(getDoc()).toBe('hello![[file.png]]---![[file.png]] world');
   });
 
   it('should detach file element after inserting links', async (): Promise<void> => {
-    const app = createMockApp();
-    createControl({ app });
-
-    const mockData = new ArrayBuffer(8);
-    const mockFiles: MockFile[] = [
-      { arrayBuffer: vi.fn().mockResolvedValue(mockData), name: 'photo.png' }
-    ];
-    mockFileEl.files = {
-      [Symbol.iterator]: (): IterableIterator<MockFile> => mockFiles[Symbol.iterator]()
-    };
+    createControl();
+    pickFiles(['photo.png']);
 
     await mockFileEl.triggerChange();
 
@@ -407,7 +387,12 @@ describe('InsertAttachmentsControl', () => {
 
   it('should restore the recorded selections and focus the editor once files are picked', async (): Promise<void> => {
     const editor = createMockEditor();
-    new InsertAttachmentsControl({ app: createMockApp(), editor, pluginSettingsComponent: createMockComponent() });
+    new InsertAttachmentsControl({
+      app: createMockApp(),
+      editor,
+      pluginNoticeComponent: createMockNoticeComponent(),
+      pluginSettingsComponent: createMockComponent()
+    });
     mockFileEl.files = null;
 
     await mockFileEl.triggerChange();
@@ -419,14 +404,13 @@ describe('InsertAttachmentsControl', () => {
   it('should restore the recorded selections before saving the attachments', async (): Promise<void> => {
     const app = createMockApp();
     const editor = createMockEditor();
-    new InsertAttachmentsControl({ app, editor, pluginSettingsComponent: createMockComponent() });
-
-    const mockFiles: MockFile[] = [
-      { arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8)), name: 'photo.png' }
-    ];
-    mockFileEl.files = {
-      [Symbol.iterator]: (): IterableIterator<MockFile> => mockFiles[Symbol.iterator]()
-    };
+    new InsertAttachmentsControl({
+      app,
+      editor,
+      pluginNoticeComponent: createMockNoticeComponent(),
+      pluginSettingsComponent: createMockComponent()
+    });
+    pickFiles(['photo.png']);
 
     await mockFileEl.triggerChange();
 
@@ -435,33 +419,179 @@ describe('InsertAttachmentsControl', () => {
     expect(setSelectionsOrder).toBeLessThan(saveAttachmentOrder);
   });
 
-  it('should focus the editor after inserting the links', async (): Promise<void> => {
+  it('should put the cursor after the links and focus the editor when the user did not edit meanwhile', async (): Promise<void> => {
     const editor = createMockEditor();
-    new InsertAttachmentsControl({ app: createMockApp(), editor, pluginSettingsComponent: createMockComponent() });
-
-    const mockFiles: MockFile[] = [
-      { arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8)), name: 'photo.png' }
-    ];
-    mockFileEl.files = {
-      [Symbol.iterator]: (): IterableIterator<MockFile> => mockFiles[Symbol.iterator]()
-    };
+    new InsertAttachmentsControl({
+      app: createMockApp({ generateLink: '![[a.png]]' }),
+      editor,
+      pluginNoticeComponent: createMockNoticeComponent(),
+      pluginSettingsComponent: createMockComponent()
+    });
+    pickFiles(['photo.png']);
+    vi.mocked(editor.focus).mockClear();
 
     await mockFileEl.triggerChange();
 
-    const replaceSelectionOrder = vi.mocked(editor.replaceSelection).mock.invocationCallOrder[0] ?? Infinity;
-    const lastFocusOrder = vi.mocked(editor.focus).mock.invocationCallOrder.at(-1) ?? -Infinity;
-    expect(lastFocusOrder).toBeGreaterThan(replaceSelectionOrder);
+    expect(editorView.state.selection.main.head).toBe(CURSOR_OFFSET + '![[a.png]]'.length);
+    expect(editor.focus).toHaveBeenCalledTimes(2);
+  });
+
+  it('should insert at the tracked point when the user edits the note while the attachments are saved', async (): Promise<void> => {
+    const editor = createMockEditor();
+    const app = createMockApp({
+      generateLink: '![[a.png]]',
+      saveAttachment: vi.fn(() => {
+        // The user types above the insertion point, then at the end of the note, while the file is copied.
+        editorView.dispatch({ changes: { from: 0, insert: 'Oh, ' } });
+        editorView.dispatch({
+          changes: { from: editorView.state.doc.length, insert: '!' },
+          selection: CodeMirrorEditorSelection.cursor(editorView.state.doc.length + 1)
+        });
+        return Promise.resolve(castTo<TFile>({ path: 'a.png' }));
+      })
+    });
+    new InsertAttachmentsControl({
+      app,
+      editor,
+      pluginNoticeComponent: createMockNoticeComponent(),
+      pluginSettingsComponent: createMockComponent()
+    });
+    pickFiles(['photo.png']);
+    vi.mocked(editor.focus).mockClear();
+
+    await mockFileEl.triggerChange();
+
+    expect(getDoc()).toBe('Oh, hello![[a.png]] world!');
+    // The user's own cursor stays where they were typing, and the editor's focus is left alone.
+    expect(editorView.state.selection.main.head).toBe(getDoc().length);
+    expect(editor.focus).toHaveBeenCalledTimes(1);
+  });
+
+  it('should show the pending insertion while the attachments are saved, and drop it afterwards', async (): Promise<void> => {
+    let pendingCountWhileSaving = 0;
+    let markerCountWhileSaving = 0;
+    createControl({
+      app: createMockApp({
+        saveAttachment: vi.fn(() => {
+          pendingCountWhileSaving = getPendingInsertionCount();
+          markerCountWhileSaving = editorView.dom.querySelectorAll('.insert-multiple-attachments-pending').length;
+          return Promise.resolve(castTo<TFile>({ path: 'a.png' }));
+        })
+      })
+    });
+    pickFiles(['photo.png']);
+
+    await mockFileEl.triggerChange();
+
+    expect(pendingCountWhileSaving).toBe(1);
+    expect(markerCountWhileSaving).toBe(1);
+    expect(getPendingInsertionCount()).toBe(0);
+  });
+
+  it('should drop the pending insertion and detach when saving fails', async (): Promise<void> => {
+    createControl({
+      app: createMockApp({ saveAttachment: vi.fn().mockRejectedValue(new Error('disk full')) })
+    });
+    pickFiles(['photo.png']);
+
+    await expect(mockFileEl.triggerChange()).rejects.toThrow('disk full');
+
+    expect(getPendingInsertionCount()).toBe(0);
+    expect(mockFileEl.detach).toHaveBeenCalled();
+    expect(getDoc()).toBe(NOTE_CONTENT);
+  });
+
+  it('should append the links to the note when its editor was closed meanwhile', async (): Promise<void> => {
+    let processed = '';
+    const app = createMockApp({
+      generateLink: '![[a.png]]',
+      saveAttachment: vi.fn(() => {
+        editorView.dom.remove();
+        return Promise.resolve(castTo<TFile>({ path: 'a.png' }));
+      })
+    });
+    vi.mocked(app.vault.process).mockImplementation((_file, function_) => {
+      processed = function_(NOTE_CONTENT);
+      return Promise.resolve(processed);
+    });
+    createControl({ app });
+    pickFiles(['photo.png']);
+
+    await mockFileEl.triggerChange();
+
+    expect(processed).toBe(`${NOTE_CONTENT}\n![[a.png]]`);
+    expect(showNotice).toHaveBeenCalledWith(expect.stringContaining('added at its end'));
+    expect(getDoc()).toBe(NOTE_CONTENT);
+  });
+
+  it.each([
+    ['', '![[a.png]]'],
+    ['hello\n', 'hello\n![[a.png]]']
+  ])('should append the links to %j with no extra line break', async (closedNoteContent, expected): Promise<void> => {
+    let processed = '';
+    const app = createMockApp({
+      generateLink: '![[a.png]]',
+      saveAttachment: vi.fn(() => {
+        editorView.dom.remove();
+        return Promise.resolve(castTo<TFile>({ path: 'a.png' }));
+      })
+    });
+    vi.mocked(app.vault.process).mockImplementation((_file, function_) => {
+      processed = function_(closedNoteContent);
+      return Promise.resolve(processed);
+    });
+    createControl({ app });
+    pickFiles(['photo.png']);
+
+    await mockFileEl.triggerChange();
+
+    expect(processed).toBe(expected);
+  });
+
+  it('should append the links to the note when the editor switched to another note meanwhile', async (): Promise<void> => {
+    const app = createMockApp({
+      saveAttachment: vi.fn(() => {
+        // Obsidian loads the next note into the same editor as a fresh state.
+        editorView.setState(EditorState.create({ doc: 'other note', extensions: getPendingInsertionExtension() }));
+        return Promise.resolve(castTo<TFile>({ path: 'a.png' }));
+      })
+    });
+    createControl({ app });
+    pickFiles(['photo.png']);
+
+    await mockFileEl.triggerChange();
+
+    expect(getDoc()).toBe('other note');
+    expect(app.vault.process).toHaveBeenCalledWith(NOTE, expect.any(Function));
+  });
+
+  it('should not insert anything when the note was deleted meanwhile', async (): Promise<void> => {
+    const app = createMockApp({ vaultFile: null });
+    createControl({ app });
+    pickFiles(['photo.png']);
+
+    await mockFileEl.triggerChange();
+
+    expect(getDoc()).toBe(NOTE_CONTENT);
+    expect(app.vault.process).not.toHaveBeenCalled();
+    expect(showNotice).toHaveBeenCalledWith(expect.stringContaining('deleted'));
+    expect(getPendingInsertionCount()).toBe(0);
   });
 
   it('should restore the recorded selections, focus the editor and detach when the picker is cancelled', (): void => {
     const editor = createMockEditor();
-    new InsertAttachmentsControl({ app: createMockApp(), editor, pluginSettingsComponent: createMockComponent() });
+    new InsertAttachmentsControl({
+      app: createMockApp(),
+      editor,
+      pluginNoticeComponent: createMockNoticeComponent(),
+      pluginSettingsComponent: createMockComponent()
+    });
 
     mockFileEl.triggerCancel();
 
     expect(editor.setSelections).toHaveBeenCalledWith(RECORDED_SELECTIONS);
     expect(editor.focus).toHaveBeenCalled();
-    expect(editor.replaceSelection).not.toHaveBeenCalled();
+    expect(getDoc()).toBe(NOTE_CONTENT);
     expect(mockFileEl.detach).toHaveBeenCalled();
     expect(mockDocumentRemoveEventListener).toHaveBeenCalledWith('focus', expect.any(Function));
   });

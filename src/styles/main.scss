@@ -3,3 +3,8 @@ input[type="file"].insert-multiple-attachments {
   opacity: 0;
   z-index: -9999;
 }
+
+.insert-multiple-attachments-pending {
+  color: var(--text-faint);
+  font-style: italic;
+}
