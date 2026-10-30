@@ -6,6 +6,7 @@ import type {
   PluginManifest
 } from 'obsidian';
 
+import { OpenBugReportCommandHandler } from '@mnaoumov/obsidian-lib/command-handlers/open-bug-report-command-handler';
 import { OpenDemoVaultCommandHandler } from '@mnaoumov/obsidian-lib/command-handlers/open-demo-vault-command-handler';
 import { PluginSettingsTabComponent } from '@mnaoumov/obsidian-lib/components/plugin-settings-tab-component';
 import { PluginDataHandler } from '@mnaoumov/obsidian-lib/data-handler';
@@ -223,12 +224,13 @@ describe('Plugin', () => {
       expect(MockPluginRibbonIconRegistrar).toHaveBeenCalledWith(plugin);
     });
 
-    it('should register the invoke and open demo vault command handlers on the base command-handler component', () => {
+    it('should register the invoke, report bug and open demo vault command handlers on the base command-handler component', () => {
       const plugin = new Plugin(app, manifest);
       const commandHandlers = seedAndRun(plugin);
 
       expect(commandHandlers).toStrictEqual([
         instanceOf(MockInvokeCommandHandler),
+        expect.any(OpenBugReportCommandHandler),
         instanceOf(MockOpenDemoVaultCommandHandler)
       ]);
     });
