@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 1.5.0
+
+- docs(readme): point bug reports at the Report a bug command
+- feat: add a Report a bug command
+- docs: add issue-filing instructions for AI agents
+- chore(github): give the bug form the field ids bug-report links prefill
+- fix(insert): save every attachment by the note the command ran from, even after a note switch mid-save
+- build(deps): override re2js to ^2.9.1 for GHSA-gg6h-894w-4m9c
+- fix(insert): keep the insertion point through edits made while attachments are saved
+- fix(insert): give the cursor back to the editor once the file picker closes
+- build(deps): bump typescript-dev-toolkit to ^5.2.0
+- build(deps): bump obsidian-dev-toolkit to ^7.1.1 and typescript-dev-toolkit to ^5.1.0
+- chore: adopt readonly interface members
+- docs(readme): combine related resources and plugin comparisons
+- docs(readme): add a Similar plugins section
+
 ## 1.4.8
 
 - test(demo-vault): floor `CodeScript Toolkit` at 15.0.0
