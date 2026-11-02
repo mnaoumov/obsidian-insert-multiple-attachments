@@ -45,7 +45,7 @@ Each file lands in your vault's own attachment folder, exactly as Obsidian's sin
 
 ## See also
 
-[My other Obsidian resources](https://github.com/mnaoumov/obsidian-resources)
+[My other Obsidian resources](https://mnaoumov.dev/obsidian/)
 
 | Plugin | Features | How `Insert Multiple Attachments` differs |
 | --- | --- | --- |
