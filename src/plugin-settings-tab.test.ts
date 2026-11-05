@@ -55,8 +55,8 @@ function createSettingsTab(): PluginSettingsTab {
   return new PluginSettingsTab({ plugin, pluginSettingsComponent });
 }
 
-function findBind(key: keyof PluginSettings): BindCapture {
-  const call = ensureNonNullable(bindSpy.mock.calls.find((bindCall) => bindCall[0].propertyName === key));
+function findPrefixBind(): BindCapture {
+  const call = ensureNonNullable(bindSpy.mock.calls.find((bindCall) => bindCall[0].propertyName === 'attachmentLinksPrefix'));
   return {
     component: castTo<TextComponent>(call[0].valueComponent),
     options: castTo<WhitespaceBindOptions>(call[0])
@@ -116,7 +116,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
     renderRows(tab);
 
-    const converter = ensureNonNullable(findBind('attachmentLinksPrefix').options.pluginSettingsToComponentValueConverter);
+    const converter = ensureNonNullable(findPrefixBind().options.pluginSettingsToComponentValueConverter);
 
     expect(converter('\n')).toBe('↵');
   });
@@ -125,7 +125,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
     renderRows(tab);
 
-    const converter = ensureNonNullable(findBind('attachmentLinksPrefix').options.pluginSettingsToComponentValueConverter);
+    const converter = ensureNonNullable(findPrefixBind().options.pluginSettingsToComponentValueConverter);
 
     expect(converter(' ')).toBe('␣');
   });
@@ -134,7 +134,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
     renderRows(tab);
 
-    const converter = ensureNonNullable(findBind('attachmentLinksPrefix').options.componentToPluginSettingsValueConverter);
+    const converter = ensureNonNullable(findPrefixBind().options.componentToPluginSettingsValueConverter);
 
     expect(converter('↵')).toBe('\n');
   });
@@ -143,7 +143,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
     renderRows(tab);
 
-    const converter = ensureNonNullable(findBind('attachmentLinksPrefix').options.componentToPluginSettingsValueConverter);
+    const converter = ensureNonNullable(findPrefixBind().options.componentToPluginSettingsValueConverter);
 
     expect(converter('␣')).toBe(' ');
   });
@@ -152,7 +152,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
     renderRows(tab);
 
-    const inputEl = findBind('attachmentLinksPrefix').component.inputEl;
+    const inputEl = findPrefixBind().component.inputEl;
     inputEl.value = ' ';
     inputEl.dispatchEvent(new Event('input'));
 
@@ -163,7 +163,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
     renderRows(tab);
 
-    const inputEl = findBind('attachmentLinksPrefix').component.inputEl;
+    const inputEl = findPrefixBind().component.inputEl;
     inputEl.value = 'prefix';
     Object.defineProperties(inputEl, {
       selectionEnd: { configurable: true, value: 6 },
@@ -182,7 +182,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
     renderRows(tab);
 
-    const inputEl = findBind('attachmentLinksPrefix').component.inputEl;
+    const inputEl = findPrefixBind().component.inputEl;
     inputEl.value = 'prefix';
 
     const keypressEvent = new KeyboardEvent('keypress', { key: 'a' });
@@ -197,7 +197,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
     renderRows(tab);
 
-    const inputEl = findBind('attachmentLinksPrefix').component.inputEl;
+    const inputEl = findPrefixBind().component.inputEl;
     Object.defineProperties(inputEl, {
       selectionEnd: { configurable: true, value: null },
       selectionStart: { configurable: true, value: null }
@@ -212,7 +212,7 @@ describe('PluginSettingsTab', () => {
     const tab = createSettingsTab();
     renderRows(tab);
 
-    const inputEl = findBind('attachmentLinksPrefix').component.inputEl;
+    const inputEl = findPrefixBind().component.inputEl;
     inputEl.value = 'text';
     Object.defineProperties(inputEl, {
       selectionEnd: { configurable: true, value: null },
