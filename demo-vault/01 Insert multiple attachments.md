@@ -40,6 +40,16 @@ The Command Palette is one of three, and the other two can be turned off if you 
 - The **editor right-click menu**
   - **Insert multiple attachments** (`shouldShowInEditorContextMenu`, on by default).
 
+## On mobile
+
+The plugin works on Android and iOS too, but it does **not** change Obsidian's own attachment button: the paperclip in the mobile toolbar still runs the built-in single-file command. Run the plugin's command instead:
+
+1. From the **Command Palette**: search for **`Insert Multiple Attachments`: Invoke**.
+2. From a **mobile toolbar button of its own**: add the **`Insert Multiple Attachments`: Invoke** command in Obsidian's mobile toolbar options (**Settings → Mobile**), and it gets a button beside the built-in ones.
+3. From the **ribbon** or the **editor menu**, as on desktop, if those are turned on.
+
+The phone's own file picker opens next. Select several files there (on most pickers, long-press the first one, then tap the rest) and confirm.
+
 ## What happens
 
 - Every chosen file is saved as an attachment, exactly as Obsidian's single-file command would do - just for **all** of them in one go.
