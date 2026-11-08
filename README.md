@@ -37,7 +37,7 @@ A copy of the vault ships with every release. You can access it via any of the f
 
 ## What it does
 
-- **Insert many attachments at once**, from the Command Palette, the ribbon paperclip, or the editor right-click menu — the last two switchable off if you do not want them. [01 Insert multiple attachments](<./demo-vault/01 Insert multiple attachments.md>)
+- **Insert many attachments at once**, from the Command Palette, the ribbon paperclip, or the editor right-click menu — the last two switchable off if you do not want them. On mobile, Obsidian's own toolbar paperclip stays single-file: run the command, or add it as a mobile toolbar button. [01 Insert multiple attachments](<./demo-vault/01 Insert multiple attachments.md>)
 - **Control the text around the links** — a prefix, a delimiter between them, and a suffix — so six embeds can come out as a list, a gallery row, or whatever your note needs. [02 Link formatting](<./demo-vault/02 Link formatting.md>)
 - **Every setting**, by the key it is stored under. [03 Settings](<./demo-vault/03 Settings.md>)
 
