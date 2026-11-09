@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 1.5.1
+
+This release has 1 fix and 4 documentation changes. 2 maintenance commits (tests, build, CI, refactoring, dependencies) are not listed.
+
+### Fixed
+
+- **deps:** clear the glob cancellation advisory
+
+### Documentation
+
+- **changelog:** regroup the published release notes for readers
+- explain how to run the command on mobile
+- make issue attachments optional and strongly encouraged
+- link to the Obsidian resources page
+
 ## 1.5.0
 
 This release has 1 new feature, 3 fixes and 4 documentation changes. 5 maintenance commits (tests, build, CI, refactoring, dependencies) are not listed.
