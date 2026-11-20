@@ -1,17 +1,17 @@
 import type { App } from 'obsidian';
 
-import { Notice } from 'obsidian';
 import { configureCommunityPlugin } from '@mnaoumov/obsidian-lib/community-plugins';
+import { Notice } from 'obsidian';
 
 const PLUGIN_ID = 'insert-multiple-attachments';
 const PLAYGROUND_NOTE_PATH = 'Playground.md';
 
 interface DemoSettingsPatch {
-  attachmentLinksDelimiter?: string;
-  attachmentLinksPrefix?: string;
-  attachmentLinksSuffix?: string;
-  shouldShowInEditorContextMenu?: boolean;
-  shouldShowRibbonIcon?: boolean;
+  readonly attachmentLinksDelimiter?: string;
+  readonly attachmentLinksPrefix?: string;
+  readonly attachmentLinksSuffix?: string;
+  readonly shouldShowInEditorContextMenu?: boolean;
+  readonly shouldShowRibbonIcon?: boolean;
 }
 
 // The command always inserts at the cursor, which the button parks on the blank line after this marker.
@@ -39,7 +39,7 @@ export async function changeSettings(app: App, patch: DemoSettingsPatch): Promis
  * or more files yourself. Everything up to that point is what this button removes.
  *
  * Manual equivalent: open `Playground.md`, click the blank line under the first heading, and run
- * **Insert Multiple Attachments: Invoke**.
+ * `Insert Multiple Attachments: Invoke`.
  */
 export async function insertInPlayground(app: App): Promise<void> {
   const note = app.vault.getFileByPath(PLAYGROUND_NOTE_PATH);
