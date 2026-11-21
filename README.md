@@ -50,11 +50,12 @@ Each file lands in your vault's own attachment folder, exactly as Obsidian's sin
 | Plugin | Features | How `Insert Multiple Attachments` differs |
 | --- | --- | --- |
 | [`Add Attachment`](https://community.obsidian.md/plugins/add-attachment) | Multi-file picker; native attachment destination; note-based renames; image downscaling | Same batch-insert goal; configurable link prefix, delimiter and suffix |
-| [`Bulk Image to File Importer`](https://community.obsidian.md/plugins/bulk-image-to-file-importer) | Batch image import window; append or per-image notes; templates; JPEG compression | Different insertion point: current cursor; any file type |
-| [`Mobile UX`](https://community.obsidian.md/plugins/mobile) | Mobile toolbar and gestures; multi-file attachment action; newline-separated links | Narrower focus: batch attachment insertion; configurable text around links |
-| [`Simple Image Inserter`](https://community.obsidian.md/plugins/simple-image-inserter) | Multi-image picker; one full-path Obsidian link embed per line | Broader input: any file type; follows link-format settings; configurable surrounding text |
+| [`Bulk Image to File Importer`](https://community.obsidian.md/plugins/bulk-image-to-file-importer) | Batch image import window; append or per-image notes; templates; JPEG compression | Same goal of importing many files at once; inserts at the cursor rather than appending or creating notes; any file type |
+| [`Media Viewer`](https://community.obsidian.md/plugins/mediaviewer) | Gallery blocks of media in a grid; fullscreen viewer; add button that uploads several images into a gallery block | Covers part of it: inserts the picked files at the cursor as plain embeds, not into a gallery block; any file type |
+| [`Mobile UX`](https://community.obsidian.md/plugins/mobile) | Mobile toolbar and gestures; multi-file attachment action; newline-separated links | Narrower than it: only batch attachment insertion; adds configurable text around the links |
+| [`Simple Image Inserter`](https://community.obsidian.md/plugins/simple-image-inserter) | Multi-image picker; one full-path Obsidian link embed per line | Broader than it: any file type, not only images; follows link-format settings; configurable surrounding text |
 
-Last searched for similar plugins on 2026-10-26.
+Last searched for similar plugins on 2026-11-21.
 
 ## Installation
 
