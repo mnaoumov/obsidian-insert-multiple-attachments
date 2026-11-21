@@ -6,6 +6,7 @@ import { PluginBase } from '@mnaoumov/obsidian-lib/plugin/plugin';
 import { PluginEventSourceImpl } from '@mnaoumov/obsidian-lib/plugin/plugin-event-source';
 import { PluginRibbonIconRegistrar } from '@mnaoumov/obsidian-lib/ribbon-icon-registrar';
 
+import { InsertImagesCommandHandler } from './command-handlers/insert-images-command-handler.ts';
 import { InvokeCommandHandler } from './command-handlers/invoke-command-handler.ts';
 import { getPendingInsertionExtension } from './pending-insertion-field.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
@@ -41,6 +42,11 @@ export class Plugin extends PluginBase {
     );
     await this.commandHandlerComponent.registerCommandHandlers(() => [
       new InvokeCommandHandler({
+        app: this.app,
+        pluginNoticeComponent: this.pluginNoticeComponent,
+        pluginSettingsComponent
+      }),
+      new InsertImagesCommandHandler({
         app: this.app,
         pluginNoticeComponent: this.pluginNoticeComponent,
         pluginSettingsComponent

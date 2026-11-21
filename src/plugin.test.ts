@@ -23,6 +23,7 @@ import {
   vi
 } from 'vitest';
 
+import { InsertImagesCommandHandler } from './command-handlers/insert-images-command-handler.ts';
 import { InvokeCommandHandler } from './command-handlers/invoke-command-handler.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
 import { PluginSettingsTab } from './plugin-settings-tab.ts';
@@ -62,6 +63,10 @@ vi.mock('./command-handlers/invoke-command-handler.ts', () => ({
   InvokeCommandHandler: vi.fn()
 }));
 
+vi.mock('./command-handlers/insert-images-command-handler.ts', () => ({
+  InsertImagesCommandHandler: vi.fn()
+}));
+
 vi.mock('@mnaoumov/obsidian-lib/command-handlers/open-demo-vault-command-handler', () => ({
   OpenDemoVaultCommandHandler: vi.fn()
 }));
@@ -93,6 +98,7 @@ const MockPluginSettingsTabComponent = vi.mocked(PluginSettingsTabComponent);
 const MockPluginDataHandler = vi.mocked(PluginDataHandler);
 const MockPluginEventSourceImpl = vi.mocked(PluginEventSourceImpl);
 const MockInvokeCommandHandler = vi.mocked(InvokeCommandHandler);
+const MockInsertImagesCommandHandler = vi.mocked(InsertImagesCommandHandler);
 const MockOpenDemoVaultCommandHandler = vi.mocked(OpenDemoVaultCommandHandler);
 const MockPluginSettingsComponent = vi.mocked(PluginSettingsComponent);
 const MockPluginSettingsTab = vi.mocked(PluginSettingsTab);
@@ -195,6 +201,16 @@ describe('Plugin', () => {
       expect(params?.pluginSettingsComponent).toBe(instanceOf(MockPluginSettingsComponent));
     });
 
+    it('should create InsertImagesCommandHandler with the app, notice component and settings component', () => {
+      const plugin = new Plugin(app, manifest);
+      seedAndRun(plugin);
+
+      const params = MockInsertImagesCommandHandler.mock.calls[0]?.[0];
+      expect(params?.app).toBe(app);
+      expect(params?.pluginNoticeComponent).toBe(pluginNoticeComponent);
+      expect(params?.pluginSettingsComponent).toBe(instanceOf(MockPluginSettingsComponent));
+    });
+
     it('should create OpenDemoVaultCommandHandler with the app, plugin id, notice component, and version', () => {
       const plugin = new Plugin(app, manifest);
       seedAndRun(plugin);
@@ -224,12 +240,13 @@ describe('Plugin', () => {
       expect(MockPluginRibbonIconRegistrar).toHaveBeenCalledWith(plugin);
     });
 
-    it('should register the invoke, report bug and open demo vault command handlers on the base command-handler component', () => {
+    it('should register the invoke, insert images, report bug and open demo vault command handlers on the base command-handler component', () => {
       const plugin = new Plugin(app, manifest);
       const commandHandlers = seedAndRun(plugin);
 
       expect(commandHandlers).toStrictEqual([
         instanceOf(MockInvokeCommandHandler),
+        instanceOf(MockInsertImagesCommandHandler),
         expect.any(OpenBugReportCommandHandler),
         instanceOf(MockOpenDemoVaultCommandHandler)
       ]);

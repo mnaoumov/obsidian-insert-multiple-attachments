@@ -245,6 +245,34 @@ describe('InsertAttachmentsControl', () => {
     );
   });
 
+  it('should accept every file type when no accept filter is given', (): void => {
+    createControl();
+
+    expect(activeDocument.body.createEl).toHaveBeenCalledWith(
+      'input',
+      expect.objectContaining({
+        attr: { multiple: '' }
+      })
+    );
+  });
+
+  it('should set the accept filter on the file input when one is given', (): void => {
+    new InsertAttachmentsControl({
+      accept: 'image/*',
+      app: createMockApp(),
+      editor: createMockEditor(),
+      pluginNoticeComponent: createMockNoticeComponent(),
+      pluginSettingsComponent: createMockComponent()
+    });
+
+    expect(activeDocument.body.createEl).toHaveBeenCalledWith(
+      'input',
+      expect.objectContaining({
+        attr: { accept: 'image/*', multiple: '' }
+      })
+    );
+  });
+
   it('should focus and click the file input on construction', (): void => {
     createControl();
 
