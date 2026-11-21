@@ -24,6 +24,10 @@ import {
 } from './pending-insertion-field.ts';
 
 interface InsertAttachmentsControlConstructorParams {
+  /**
+   * The picker's `accept` filter, such as `image/*`. Left out, the picker accepts every file type.
+   */
+  readonly accept?: string | undefined;
   readonly app: App;
   readonly editor: Editor;
   readonly pluginNoticeComponent: PluginNoticeComponent;
@@ -62,6 +66,7 @@ export class InsertAttachmentsControl {
     this.handleFocusClickBound = this.handleFocusClick.bind(this);
     this.fileEl = this.currentActiveDocument.body.createEl('input', {
       attr: {
+        ...params.accept !== undefined && { accept: params.accept },
         multiple: ''
       },
       cls: 'insert-multiple-attachments',

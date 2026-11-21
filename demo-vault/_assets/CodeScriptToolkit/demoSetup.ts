@@ -33,6 +33,16 @@ export async function changeSettings(app: App, patch: DemoSettingsPatch): Promis
 }
 
 /**
+ * Opens the playground, puts the cursor on its blank line, and runs the image-only insert command.
+ *
+ * Manual equivalent: open `Playground.md`, click the blank line under the first heading, and run
+ * `Insert Multiple Attachments: Insert multiple images`.
+ */
+export async function insertImagesInPlayground(app: App): Promise<void> {
+  await runInPlayground(app, 'insert-images');
+}
+
+/**
  * Opens the playground, puts the cursor on its blank line, and runs the insert command.
  *
  * The OS file picker that opens next is a native dialog, so it cannot be driven from here — pick two
@@ -42,26 +52,7 @@ export async function changeSettings(app: App, patch: DemoSettingsPatch): Promis
  * `Insert Multiple Attachments: Invoke`.
  */
 export async function insertInPlayground(app: App): Promise<void> {
-  const note = app.vault.getFileByPath(PLAYGROUND_NOTE_PATH);
-  if (!note) {
-    new Notice('Playground.md is missing from the vault.');
-    return;
-  }
-
-  await app.workspace.getLeaf(false).openFile(note);
-
-  const editor = app.workspace.activeEditor?.editor;
-  if (editor) {
-    const lineCount = editor.lineCount();
-    for (let line = 0; line < lineCount; line++) {
-      if (editor.getLine(line).startsWith('<!-- Place your cursor below')) {
-        editor.setCursor({ ch: 0, line: line + 1 });
-        break;
-      }
-    }
-  }
-
-  app.commands.executeCommandById(`${PLUGIN_ID}:invoke`);
+  await runInPlayground(app, 'invoke');
 }
 
 /**
@@ -92,4 +83,27 @@ export async function resetPlayground(app: App): Promise<void> {
   });
 
   new Notice('Playground reset — the inserted embeds are gone.');
+}
+
+async function runInPlayground(app: App, commandId: string): Promise<void> {
+  const note = app.vault.getFileByPath(PLAYGROUND_NOTE_PATH);
+  if (!note) {
+    new Notice('Playground.md is missing from the vault.');
+    return;
+  }
+
+  await app.workspace.getLeaf(false).openFile(note);
+
+  const editor = app.workspace.activeEditor?.editor;
+  if (editor) {
+    const lineCount = editor.lineCount();
+    for (let line = 0; line < lineCount; line++) {
+      if (editor.getLine(line).startsWith('<!-- Place your cursor below')) {
+        editor.setCursor({ ch: 0, line: line + 1 });
+        break;
+      }
+    }
+  }
+
+  app.commands.executeCommandById(`${PLUGIN_ID}:${commandId}`);
 }

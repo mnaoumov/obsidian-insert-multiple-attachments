@@ -40,6 +40,19 @@ The Command Palette is one of three, and the other two can be turned off if you 
 - The **editor right-click menu**
   - **Insert multiple attachments** (`shouldShowInEditorContextMenu`, on by default).
 
+## Images only
+
+**`Insert Multiple Attachments`: Insert multiple images** runs the same flow with a picker that accepts **images only**, so other files are not offered at all. It is a Command Palette command, so it can also take a hotkey or a mobile toolbar button of its own.
+
+```code-button
+---
+caption: Put the cursor in the playground and run the images-only command
+---
+await require('/demoSetup.ts').insertImagesInPlayground(app);
+```
+
+Manual equivalent: open [Playground](<./Playground.md>), place the cursor, run **`Insert Multiple Attachments`: Insert multiple images** from the Command Palette, and pick two or more images.
+
 ## On mobile
 
 The plugin works on Android and iOS too, but it does **not** change Obsidian's own attachment button: the paperclip in the mobile toolbar still runs the built-in single-file command. Run the plugin's command instead:
