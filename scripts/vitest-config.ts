@@ -66,8 +66,20 @@ const DEMO_VAULT_TEST_FILES = 'src/**/*.demo-vault.integration.test.ts';
  */
 const DEMO_VAULT_TIMEOUT_IN_MILLISECONDS = 600_000;
 
+/**
+ * The performance project's own vault setup: the toolkit's default opens an empty vault, and the insert path has to be
+ * timed on one the size of a real vault.
+ */
+const PERFORMANCE_GLOBAL_SETUP_FILE = './scripts/vitest-global-setup-performance.ts';
+const PLUGIN_GLOBAL_SETUP_MODULE = 'obsidian-integration-testing/vitest-global-setup-plugin';
+
 export const config = defineObsidianPluginVitestConfig({
   customProjects(context: ObsidianPluginVitestConfigContext): TestProjectConfiguration[] {
+    // The toolkit's stale-build check stays; only the vault setup is swapped.
+    context.desktopPerformance.globalSetup = [
+      ...toArray(context.desktopPerformance.globalSetup).filter((setupFile) => setupFile !== PLUGIN_GLOBAL_SETUP_MODULE),
+      PERFORMANCE_GLOBAL_SETUP_FILE
+    ];
     return [
       {
         test: {
@@ -103,3 +115,10 @@ export const config = defineObsidianPluginVitestConfig({
     ];
   }
 });
+
+function toArray(value: readonly string[] | string | undefined): readonly string[] {
+  if (value === undefined) {
+    return [];
+  }
+  return typeof value === 'string' ? [value] : value;
+}

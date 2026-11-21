@@ -11,6 +11,7 @@ import {
   EditorState
 } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
+import { noopAsync } from '@mnaoumov/typescript-lib/function';
 import { castTo } from '@mnaoumov/typescript-lib/object-utils';
 import {
   afterEach,
@@ -327,6 +328,43 @@ describe('InsertAttachmentsControl', () => {
     await mockFileEl.triggerChange();
 
     expect(getDoc()).toBe('hello![[file.png]]---![[file.png]] world');
+  });
+
+  it('should read every picked file before the first save', async (): Promise<void> => {
+    const app = createMockApp();
+    createControl({ app });
+    pickFiles(['file1.png', 'file2.png', 'file3.png']);
+    const readFiles = [...castTo<Iterable<MockFile>>(mockFileEl.files)];
+
+    await mockFileEl.triggerChange();
+
+    const firstSaveOrder = vi.mocked(app.saveAttachment).mock.invocationCallOrder[0] ?? -Infinity;
+    for (const file of readFiles) {
+      const readOrder = vi.mocked(file.arrayBuffer).mock.invocationCallOrder[0] ?? Infinity;
+      expect(readOrder).toBeLessThan(firstSaveOrder);
+    }
+  });
+
+  it('should save the picked files one after another, in the order they were picked', async (): Promise<void> => {
+    const app = createMockApp();
+    const savedNames: string[] = [];
+    let activeSaveCount = 0;
+    let maxActiveSaveCount = 0;
+    vi.mocked(app.saveAttachment).mockImplementation(async (name: string) => {
+      activeSaveCount++;
+      maxActiveSaveCount = Math.max(maxActiveSaveCount, activeSaveCount);
+      await noopAsync();
+      savedNames.push(name);
+      activeSaveCount--;
+      return castTo<TFile>({ path: `${name}.png` });
+    });
+    createControl({ app });
+    pickFiles(['file1.png', 'file2.png', 'file3.png']);
+
+    await mockFileEl.triggerChange();
+
+    expect(maxActiveSaveCount).toBe(1);
+    expect(savedNames).toEqual(['file1', 'file2', 'file3']);
   });
 
   it('should detach file element after inserting links', async (): Promise<void> => {
