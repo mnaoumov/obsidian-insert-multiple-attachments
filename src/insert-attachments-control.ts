@@ -112,10 +112,20 @@ export class InsertAttachmentsControl {
     });
 
     try {
+      /*
+       * Reading a picked file does not depend on any save, so every file is read at once, before the first save,
+       * rather than each read waiting behind the previous file's save.
+       */
+      const pickedFiles = await Promise.all(Array.from(this.fileEl.files, async (file) => ({
+        data: await file.arrayBuffer(),
+        filename: basename(file.name)
+      })));
+      /*
+       * The saves stay one after another: each one picks a free path from the files the vault already has, so two
+       * saves running at once could pick the same path and the later write would overwrite the earlier file.
+       */
       const attachmentFiles: TFile[] = [];
-      for (const file of this.fileEl.files) {
-        const filename = basename(file.name);
-        const data = await file.arrayBuffer();
+      for (const { data, filename } of pickedFiles) {
         const extension = extname(filename);
         attachmentFiles.push(await this.saveAttachmentForNote(note, basename(filename, extension), extension.slice(1), data));
       }
