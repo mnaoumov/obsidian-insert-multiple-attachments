@@ -429,6 +429,14 @@ This release has 1 other change.
 
 - Fix any type
 
+## 1.1.10-beta.1
+
+This beta has 1 other change. 1 maintenance commit (dependencies) is not listed.
+
+### Other changes
+
+- Fix any type: the list of inserted attachment links is typed explicitly, with no change in behavior
+
 ## 1.1.9
 
 This release has 1 other change.
@@ -515,4 +523,4 @@ This release has 1 other change.
 
 ### Other changes
 
-- Initial release
+- Initial release: the built-in `Insert attachment` command accepts several files at once and inserts a link to each
